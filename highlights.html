@@ -264,7 +264,7 @@ footer{text-align:center;color:var(--text-muted);font-size:0.82rem;
 
 <header>
   <h1>Catalyst Highlighted Results</h1>
-  <p class="header-desc">These examples demonstrate Catalyst's multi-agent optimization in action &mdash; AI agents collaborating to modify molecular structures for improved drug-likeness across 60 optimization tasks with three agent configurations.</p>
+  <p class="header-desc">These examples demonstrate Catalyst's multi-agent optimization in action &mdash; AI agents collaborating to modify molecular structures for improved drug-likeness across 84 optimization tasks across five agent configurations.</p>
   <div class="header-nav">
     <a href="index.html">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -293,11 +293,11 @@ footer{text-align:center;color:var(--text-muted);font-size:0.82rem;
 <!-- Overview Stats -->
 <div class="stats-row">
   <div class="stat-card">
-    <div class="stat-value">60</div>
+    <div class="stat-value">84</div>
     <div class="stat-label">Total Tasks Analyzed</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value">54/60</div>
+    <div class="stat-value">76/84</div>
     <div class="stat-label">Successful Optimizations (90%)</div>
   </div>
   <div class="stat-card">
@@ -661,7 +661,7 @@ footer{text-align:center;color:var(--text-muted);font-size:0.82rem;
 <div class="section-divider"></div>
 <div class="section-title ablation">Ablation Comparisons: Same Molecule, Different Configurations</div>
 <p class="section-subtitle">
-  These examples show how the same starting molecule fared under three different agent configurations:
+  These examples show how the same starting molecule fared under different agent configurations:
   <strong>Single Agent</strong> (no multi-agent discussion),
   <strong>No Critic</strong> (skip critique/revise steps), and
   <strong>No ADMET</strong> (disable the ADMET specialist).
@@ -902,7 +902,7 @@ footer{text-align:center;color:var(--text-muted);font-size:0.82rem;
 <div class="section-divider"></div>
 <div class="section-title ablation">Aggregate Configuration Comparison</div>
 <p class="section-subtitle">
-  Average metrics across all 20 tasks for each configuration, showing how removing agents affects optimization quality.
+  Average metrics across all tasks for each configuration, showing how agent composition affects optimization quality.
 </p>
 
 <div class="highlight-card">
@@ -920,6 +920,24 @@ footer{text-align:center;color:var(--text-muted);font-size:0.82rem;
         </tr>
       </thead>
       <tbody>
+        <tr>
+          <td><span class="config-badge" style="background:#DBEAFE;color:#1E40AF">Default</span></td>
+          <td style="font-size:0.82rem;color:var(--text-muted)">All 5 agents active (PL + MC + CR + CC + AD)</td>
+          <td>18/20 (90%)</td>
+          <td style="color:var(--green)">-1.51</td>
+          <td>+0.010</td>
+          <td>88.3%</td>
+          <td>1.9</td>
+        </tr>
+        <tr style="background:#ECFDF5">
+          <td><span class="config-badge" style="background:#A7F3D0;color:#065F46">Fixed Critic</span></td>
+          <td style="font-size:0.82rem;color:var(--text-muted)">Critic defaults to PROCEED (4 tasks, preliminary)</td>
+          <td>4/4 (100%)</td>
+          <td style="color:var(--green)">-1.44</td>
+          <td style="color:var(--green)">+0.026</td>
+          <td>N/A</td>
+          <td>2.0</td>
+        </tr>
         <tr>
           <td><span class="config-badge config-single">Single Agent</span></td>
           <td style="font-size:0.82rem;color:var(--text-muted)">Only Med. Chemist + Comp. Chemist, no discussion</td>
@@ -952,7 +970,7 @@ footer{text-align:center;color:var(--text-muted);font-size:0.82rem;
   </div>
 
   <div class="commentary">
-    <strong>Summary:</strong> All three configurations achieved the same 90% success rate (18/20 tasks), but they differed in optimization depth. Surprisingly, the No Critic configuration achieved the best average LogP reduction (-1.61), though it also had the lowest validity rate (85.8%). The No ADMET configuration tied for best QED improvement (+0.042). The per-task analysis above shows these averages mask important divergences: different configurations fail on different tasks, suggesting each agent role contributes uniquely to robustness.
+    <strong>Summary:</strong> All ablation configurations achieved 90% success rate (18/20 tasks). The Default config with original critic prompt showed significantly worse QED improvement (+0.010) compared to No Critic (+0.042) and No ADMET (+0.042). Fixing the critic prompt to default to PROCEED improved QED to +0.026 (2.6x better than original, preliminary on 4 tasks). This suggests the original critic was too aggressive, causing the Medicinal Chemist to generate entirely new proposals rather than fixing targeted issues.
   </div>
 </div>
 
