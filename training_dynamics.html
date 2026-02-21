@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAILS &mdash; Training Dynamics</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: #0f172a; color: #e2e8f0; line-height: 1.6; padding: 2rem 1rem;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 {
+        font-size: 2rem; font-weight: 700;
+        background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text; margin-bottom: 0.4rem;
+    }
+    .subtitle { color: #94a3b8; font-size: 0.95rem; }
+    .pipeline-tag {
+        display: inline-block; margin-top: 0.8rem;
+        padding: 0.3rem 0.8rem; border-radius: 20px;
+        font-size: 0.75rem; font-weight: 600;
+        background: rgba(99, 102, 241, 0.15); color: #818cf8;
+        border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+    .live-dot {
+        display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+        background: #22c55e; margin-right: 0.4rem; vertical-align: middle;
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+        50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+    }
+    .updated-tag {
+        display: inline-block; margin-left: 0.8rem;
+        font-size: 0.72rem; color: #64748b;
+    }
+    h2.section-title {
+        font-size: 1.15rem; color: #f1f5f9; margin-bottom: 1rem;
+        display: flex; align-items: center; gap: 0.6rem;
+    }
+    .section-num {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 28px; height: 28px; border-radius: 8px;
+        background: rgba(99, 102, 241, 0.2); color: #818cf8;
+        font-size: 0.8rem; font-weight: 700;
+    }
+    .section { margin-bottom: 2.5rem; }
+    .card {
+        background: #1e293b; border-radius: 16px; padding: 1.5rem;
+        border: 1px solid #334155; margin-bottom: 1.2rem;
+        transition: border-color 0.2s;
+    }
+    .card:hover { border-color: #475569; }
+    .card h3 { font-size: 1rem; color: #f1f5f9; margin-bottom: 0.3rem; font-weight: 600; }
+    .card p.note { font-size: 0.82rem; color: #94a3b8; margin-bottom: 1rem; line-height: 1.5; }
+    .chart-container { position: relative; width: 100%; }
+    .model-selector { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+    .model-btn {
+        padding: 0.35rem 0.8rem; border-radius: 8px;
+        border: 1.5px solid #334155; background: transparent;
+        color: #94a3b8; font-size: 0.8rem; font-weight: 500;
+        cursor: pointer; transition: all 0.15s;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .model-btn:hover { border-color: #64748b; color: #e2e8f0; background: rgba(255,255,255,0.03); }
+    .model-btn.active { border-color: #6366f1; background: rgba(99, 102, 241, 0.12); color: #a5b4fc; font-weight: 600; }
+    .chart-grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 768px) { .chart-grid-2x2 { grid-template-columns: 1fr; } }
+    .mini-card {
+        background: #1e293b; border-radius: 12px; padding: 1.2rem;
+        border: 1px solid #334155;
+    }
+    .mini-card h4 { font-size: 0.88rem; color: #cbd5e1; margin-bottom: 0.6rem; font-weight: 600; }
+    .stat-strip {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.8rem; margin-bottom: 2rem;
+    }
+    .stat-box {
+        background: #1e293b; border-radius: 12px; padding: 1rem;
+        border: 1px solid #334155; text-align: center;
+    }
+    .stat-box .val {
+        font-size: 1.6rem; font-weight: 700;
+        background: linear-gradient(135deg, #60a5fa, #a78bfa);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .stat-box .lbl { font-size: 0.72rem; color: #64748b; margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .insight-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;
+    }
+    .insight {
+        background: #1e293b; border-radius: 12px; padding: 1.2rem;
+        border: 1px solid #334155; border-left: 4px solid #6366f1;
+    }
+    .insight h4 { font-size: 0.88rem; color: #f1f5f9; margin-bottom: 0.4rem; }
+    .insight p { font-size: 0.8rem; color: #94a3b8; line-height: 1.5; }
+    .insight.green { border-left-color: #22c55e; }
+    .insight.amber { border-left-color: #f59e0b; }
+    .insight.rose { border-left-color: #f43f5e; }
+    .zoom-hint {
+        font-size: 0.72rem; color: #475569; text-align: right;
+        margin-top: 0.4rem; font-style: italic;
+    }
+    .footer {
+        text-align: center; color: #475569; font-size: 0.78rem;
+        margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid #1e293b;
+    }
+    .loading { text-align: center; padding: 4rem; color: #64748b; }
+    .loading .spinner {
+        display: inline-block; width: 32px; height: 32px;
+        border: 3px solid #334155; border-top-color: #6366f1;
+        border-radius: 50%; animation: spin 0.8s linear infinite;
+        margin-bottom: 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #main-content { display: none; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div style="margin-bottom:2.5rem;">
+    <h1>RAILS &mdash; Training Dynamics</h1>
+    <p class="subtitle">
+        <span class="live-dot"></span>Auto-updating learning curves for SFT warmup and GRPO reinforcement learning
+        <span class="updated-tag" id="lastUpdated"></span>
+    </p>
+    <span class="pipeline-tag">SFT &rarr; GRPO (SAT-Think-from-SFT) &middot; live runs</span>
+</div>
+
+<div id="loading" class="loading">
+    <div class="spinner"></div>
+    <div>Loading training data...</div>
+</div>
+
+<div id="main-content">
+
+<div class="stat-strip">
+    <div class="stat-box"><div class="val" id="statModels">-</div><div class="lbl">Models</div></div>
+    <div class="stat-box"><div class="val">6,033</div><div class="lbl">SFT Examples</div></div>
+    <div class="stat-box"><div class="val">SAT</div><div class="lbl">Consistency Reward</div></div>
+    <div class="stat-box"><div class="val" id="statMaxSteps">-</div><div class="lbl">Max GRPO Steps</div></div>
+</div>
+
+<div class="section">
+    <h2 class="section-title"><span class="section-num">1</span> SFT Warmup</h2>
+    <div class="card">
+        <h3>Loss Convergence</h3>
+        <p class="note">Supervised fine-tuning on 6,033 verified &lt;think&gt;+&lt;step&gt; completions (propositional + FOL + non-monotonic).</p>
+        <div class="chart-container" style="height:340px;"><canvas id="sftChart"></canvas></div>
+        <div class="zoom-hint">scroll to zoom &middot; drag to pan &middot; double-click to reset</div>
+    </div>
+</div>
+
+<div class="section">
+    <h2 class="section-title"><span class="section-num">2</span> GRPO Reward Dynamics</h2>
+    <div class="card">
+        <h3>Total Reward</h3>
+        <p class="note">Combined reward (consistency + gated answer + format + length penalty). All models start from their SFT checkpoint.</p>
+        <div class="chart-container" style="height:380px;"><canvas id="totalRewardChart"></canvas></div>
+        <div class="zoom-hint">scroll to zoom &middot; drag to pan &middot; double-click to reset</div>
+    </div>
+    <div class="card">
+        <h3>Reward Components</h3>
+        <p class="note">Individual reward signals over training. Select a model to inspect.</p>
+        <div class="model-selector" id="componentSelector"></div>
+        <div class="chart-grid-2x2">
+            <div class="mini-card"><h4>Consistency</h4><div class="chart-container" style="height:220px;"><canvas id="compConsistencyChart"></canvas></div></div>
+            <div class="mini-card"><h4>Answer (Gated)</h4><div class="chart-container" style="height:220px;"><canvas id="compAnswerChart"></canvas></div></div>
+            <div class="mini-card"><h4>Format</h4><div class="chart-container" style="height:220px;"><canvas id="compFormatChart"></canvas></div></div>
+            <div class="mini-card"><h4>Length Penalty</h4><div class="chart-container" style="height:220px;"><canvas id="compLengthChart"></canvas></div></div>
+        </div>
+    </div>
+    <div class="card">
+        <h3>KL Divergence</h3>
+        <p class="note">Distance from the reference (SFT) policy. Values capped at 100 for visualization.</p>
+        <div class="chart-container" style="height:340px;"><canvas id="klChart"></canvas></div>
+        <div class="zoom-hint">scroll to zoom &middot; drag to pan &middot; double-click to reset</div>
+    </div>
+</div>
+
+<div class="section">
+    <h2 class="section-title"><span class="section-num">3</span> Training Quality</h2>
+    <div class="card">
+        <p class="note">Structural metrics tracked during GRPO. Select a model to inspect.</p>
+        <div class="model-selector" id="qualitySelector"></div>
+        <div class="chart-grid-2x2">
+            <div class="mini-card"><h4>Format Compliance</h4><div class="chart-container" style="height:220px;"><canvas id="qualFormatChart"></canvas></div></div>
+            <div class="mini-card"><h4>Avg Valid Steps</h4><div class="chart-container" style="height:220px;"><canvas id="qualValidChart"></canvas></div></div>
+            <div class="mini-card"><h4>Avg Num Steps</h4><div class="chart-container" style="height:220px;"><canvas id="qualNumStepsChart"></canvas></div></div>
+            <div class="mini-card"><h4>Completion Length (tokens)</h4><div class="chart-container" style="height:220px;"><canvas id="qualLengthChart"></canvas></div></div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2 class="section-title"><span class="section-num">4</span> Run Summary</h2>
+    <div id="runSummary" class="insight-grid"></div>
+</div>
+
+<div class="footer" id="footer">RAILS &mdash; ProofContinuity</div>
+</div>
+</div>
+
+<script>
+Chart.defaults.color = '#94a3b8';
+Chart.defaults.borderColor = '#1e293b';
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+
+var zoomPlugin = {
+    zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' },
+    pan: { enabled: true, mode: 'x' },
+};
+var COLORS = {
+    'DeepSeek-7B':  { line: '#60a5fa', fill: 'rgba(96,165,250,0.08)' },
+    'DeepSeek-14B': { line: '#f472b6', fill: 'rgba(244,114,182,0.08)' },
+    'Qwen3-8B':    { line: '#a78bfa', fill: 'rgba(167,139,250,0.08)' },
+    'QwQ-32B':     { line: '#34d399', fill: 'rgba(52,211,153,0.08)' },
+};
+var FALLBACK = [
+    { line: '#fb923c', fill: 'rgba(251,146,60,0.08)' },
+    { line: '#f87171', fill: 'rgba(248,113,113,0.08)' },
+];
+var COMP_COLORS = {
+    'reward/consistency':    { line: '#60a5fa', fill: 'rgba(96,165,250,0.10)' },
+    'reward/gated_answer':   { line: '#34d399', fill: 'rgba(52,211,153,0.10)' },
+    'reward/format':         { line: '#fbbf24', fill: 'rgba(251,191,36,0.10)' },
+    'reward/length_penalty': { line: '#f87171', fill: 'rgba(248,113,113,0.10)' },
+};
+var QUAL_COLORS = {
+    'steps/format_compliance': { line: '#fbbf24', fill: 'rgba(251,191,36,0.10)' },
+    'steps/avg_valid_steps':   { line: '#60a5fa', fill: 'rgba(96,165,250,0.10)' },
+    'steps/avg_num_steps':     { line: '#a78bfa', fill: 'rgba(167,139,250,0.10)' },
+    'completion_length':        { line: '#34d399', fill: 'rgba(52,211,153,0.10)' },
+};
+
+function gc(n, i) { return COLORS[n] || FALLBACK[i % FALLBACK.length]; }
+function makeDS(l, s, v, lc, fc) {
+    return { label:l, data:s.map(function(x,i){return{x:x,y:v[i]}}), borderColor:lc, backgroundColor:fc||'transparent', fill:!!fc, borderWidth:2, pointRadius:0, pointHoverRadius:4, pointHoverBackgroundColor:lc, tension:0.35 };
+}
+function opts(yl) {
+    return { responsive:true, maintainAspectRatio:false, interaction:{mode:'nearest',intersect:false},
+        scales:{ x:{type:'linear',title:{display:true,text:'Training Step',color:'#64748b',font:{size:11}},grid:{color:'rgba(51,65,85,0.5)'},ticks:{color:'#64748b',font:{size:10}}}, y:{title:{display:true,text:yl,color:'#64748b',font:{size:11}},grid:{color:'rgba(51,65,85,0.5)'},ticks:{color:'#64748b',font:{size:10}}} },
+        plugins:{ legend:{position:'top',labels:{boxWidth:16,padding:14,color:'#cbd5e1',font:{size:11}}}, zoom:zoomPlugin, tooltip:{backgroundColor:'#1e293b',titleColor:'#f1f5f9',bodyColor:'#cbd5e1',borderColor:'#334155',borderWidth:1,padding:10,displayColors:true,callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y.toFixed(4)}}} } };
+}
+function mopts(yl) { var o=opts(yl); o.plugins.legend={display:false}; return o; }
+function mkBtns(id, models, cb) {
+    var el=document.getElementById(id); el.innerHTML='';
+    models.forEach(function(n,i){ var b=document.createElement('button'); b.className='model-btn'+(i===0?' active':''); b.dataset.run=n; b.textContent=n; b.onclick=function(){cb(this)}; el.appendChild(b); });
+}
+
+fetch('training_data.json?t='+Date.now()).then(function(r){return r.json()}).then(function(D){
+    document.getElementById('loading').style.display='none';
+    document.getElementById('main-content').style.display='block';
+    var m=D.meta||{};
+    if(m.updated){ document.getElementById('lastUpdated').textContent='Last updated: '+m.updated; document.getElementById('footer').innerHTML='Updated '+m.updated+' &mdash; RAILS &mdash; ProofContinuity'; }
+    var gm=Object.keys(D.grpo), sm=Object.keys(D.sft);
+    document.getElementById('statModels').textContent=Math.max(gm.length,sm.length);
+    var mx=0; gm.forEach(function(n){var s=D.grpo[n].step; if(s[s.length-1]>mx)mx=s[s.length-1]}); document.getElementById('statMaxSteps').textContent=mx.toLocaleString();
+
+    // SFT
+    var sds=[]; sm.forEach(function(n,i){var d=D.sft[n],c=gc(n,i); sds.push(makeDS(n,d.step,d.loss,c.line,c.fill))}); new Chart(document.getElementById('sftChart'),{type:'line',data:{datasets:sds},options:opts('Loss')});
+
+    // Total Reward
+    var tds=[]; gm.forEach(function(n,i){var d=D.grpo[n],c=gc(n,i); tds.push(makeDS(n,d.step,d['reward/total'],c.line,c.fill))}); new Chart(document.getElementById('totalRewardChart'),{type:'line',data:{datasets:tds},options:opts('Total Reward')});
+
+    // Components
+    var cm={compConsistencyChart:'reward/consistency',compAnswerChart:'reward/gated_answer',compFormatChart:'reward/format',compLengthChart:'reward/length_penalty'};
+    var cl={'reward/consistency':'Consistency','reward/gated_answer':'Answer (Gated)','reward/format':'Format','reward/length_penalty':'Length Penalty'};
+    var cc={};
+    function mkComp(rn){var d=D.grpo[rn];if(!d)return;for(var id in cm){var mt=cm[id];if(cc[id])cc[id].destroy();var co=COMP_COLORS[mt];cc[id]=new Chart(document.getElementById(id),{type:'line',data:{datasets:[makeDS(cl[mt],d.step,d[mt],co.line,co.fill)]},options:mopts(cl[mt])})}}
+    mkBtns('componentSelector',gm,function(b){b.parentElement.querySelectorAll('.model-btn').forEach(function(x){x.classList.remove('active')});b.classList.add('active');mkComp(b.dataset.run)});
+    mkComp(gm[0]);
+
+    // KL
+    var kds=[]; gm.forEach(function(n,i){var d=D.grpo[n],c=gc(n,i); var kl=d.kl.map(function(v){return v===null?null:Math.min(v,100)}); kds.push(makeDS(n,d.step,kl,c.line,null))}); new Chart(document.getElementById('klChart'),{type:'line',data:{datasets:kds},options:opts('KL Divergence (capped at 100)')});
+
+    // Quality
+    var qm={qualFormatChart:{k:'steps/format_compliance',l:'Format Compliance'},qualValidChart:{k:'steps/avg_valid_steps',l:'Avg Valid Steps'},qualNumStepsChart:{k:'steps/avg_num_steps',l:'Avg Num Steps'},qualLengthChart:{k:'completion_length',l:'Tokens'}};
+    var qc={};
+    function mkQual(rn){var d=D.grpo[rn];if(!d)return;for(var id in qm){var cfg=qm[id];if(qc[id])qc[id].destroy();var co=QUAL_COLORS[cfg.k];qc[id]=new Chart(document.getElementById(id),{type:'line',data:{datasets:[makeDS(cfg.l,d.step,d[cfg.k],co.line,co.fill)]},options:mopts(cfg.l)})}}
+    mkBtns('qualitySelector',gm,function(b){b.parentElement.querySelectorAll('.model-btn').forEach(function(x){x.classList.remove('active')});b.classList.add('active');mkQual(b.dataset.run)});
+    mkQual(gm[0]);
+
+    // Run Summary
+    var h='',ic=['green','','amber','rose'];
+    gm.forEach(function(n,i){var d=D.grpo[n],s=d.step,ms=s[s.length-1],lr=d['reward/total'][s.length-1],lc=d['reward/consistency'][s.length-1],lf=d['reward/format'][s.length-1];
+        h+='<div class="insight '+ic[i%ic.length]+'"><h4>'+n+'</h4><p><strong>'+ms.toLocaleString()+'</strong> GRPO steps<br>Reward: <strong>'+lr.toFixed(2)+'</strong><br>Consistency: <strong>'+lc.toFixed(3)+'</strong><br>Format: <strong>'+lf.toFixed(3)+'</strong></p></div>';
+    });
+    document.getElementById('runSummary').innerHTML=h;
+}).catch(function(e){
+    document.getElementById('loading').innerHTML='<div style="color:#f87171;">Failed to load training data.<br><span style="color:#64748b;font-size:0.85rem;">'+e.message+'</span></div>';
+});
+</script>
+</body>
+</html>
