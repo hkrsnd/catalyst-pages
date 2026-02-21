@@ -3,92 +3,464 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catalyst Lab Reports</title>
+<title>Catalyst &mdash; Multi-Agent Scientific Optimization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+/* ===================================================================
+   CATALYST INDEX PAGE STYLES
+   =================================================================== */
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
 :root{
-  --blue:#2563EB;--green:#16A34A;--amber:#D97706;--purple:#7C3AED;--red:#DC2626;
-  --bg:#F0F2F5;--card:#FFFFFF;--border:#E2E8F0;--text:#1E293B;--text-muted:#64748B;
-  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --blue: #2563EB;
+  --blue-dark: #1E40AF;
+  --blue-light: #DBEAFE;
+  --green: #16A34A;
+  --green-light: #DCFCE7;
+  --amber: #D97706;
+  --amber-light: #FEF3C7;
+  --purple: #7C3AED;
+  --purple-light: #EDE9FE;
+  --red: #DC2626;
+  --red-light: #FEE2E2;
+  --bg: #F8FAFC;
+  --bg-alt: #FFFFFF;
+  --card: #FFFFFF;
+  --border: #E2E8F0;
+  --border-light: #F1F5F9;
+  --text: #0F172A;
+  --text-secondary: #334155;
+  --text-muted: #64748B;
+  --text-faint: #94A3B8;
+  --dark-bg: #0F172A;
+  --dark-bg-2: #1E293B;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
-body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;
-  max-width:960px;margin:0 auto;padding:32px 20px 80px}
 
-/* Header */
-.page-header{
-  background:radial-gradient(ellipse at 30% 50%,#334155 0%,#1E293B 70%);
-  color:#fff;padding:48px 44px;border-radius:20px;margin-bottom:12px;text-align:center;
-  position:relative;overflow:hidden
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 }
-.page-header::before{
-  content:"";position:absolute;top:-50%;right:-20%;width:400px;height:400px;
-  background:radial-gradient(circle,rgba(99,102,241,0.15) 0%,transparent 70%);
-  border-radius:50%;pointer-events:none
+
+/* ===================================================================
+   NAVIGATION
+   =================================================================== */
+.nav{
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:rgba(15,23,42,0.92);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,0.06);
 }
-.page-header h1{font-size:2.2rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:6px;position:relative}
-.page-header p{opacity:0.7;font-size:0.95rem;position:relative}
+.nav-inner{
+  max-width:1120px; margin:0 auto;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 32px; height:56px;
+}
+.nav-brand{
+  font-weight:800; font-size:1.05rem; color:#fff;
+  letter-spacing:-0.03em; text-decoration:none;
+}
+.nav-brand span{color:var(--blue);}
+.nav-links{ display:flex; gap:8px; }
+.nav-links a{
+  color:rgba(255,255,255,0.65); font-size:0.82rem; font-weight:500;
+  text-decoration:none; padding:6px 14px; border-radius:8px;
+  transition:color 0.15s, background 0.15s;
+}
+.nav-links a:hover{color:#fff; background:rgba(255,255,255,0.08);}
 
-/* Intro text */
-.intro{text-align:center;color:var(--text-muted);font-size:0.88rem;margin-bottom:28px;
-  max-width:680px;margin-left:auto;margin-right:auto;line-height:1.7}
+/* ===================================================================
+   HERO SECTION
+   =================================================================== */
+.hero{
+  position:relative;
+  background:linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+  color:#fff;
+  padding:140px 32px 100px;
+  text-align:center;
+  overflow:hidden;
+  margin-top:56px;
+}
+.hero::before{
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 600px 400px at 20% 40%, rgba(37,99,235,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 350px at 75% 60%, rgba(124,58,237,0.10) 0%, transparent 70%),
+    radial-gradient(ellipse 300px 300px at 50% 20%, rgba(37,99,235,0.08) 0%, transparent 70%);
+  pointer-events:none;
+  animation:heroGlow 12s ease-in-out infinite alternate;
+}
+@keyframes heroGlow{
+  0%{opacity:1;transform:scale(1)}
+  50%{opacity:0.85;transform:scale(1.03)}
+  100%{opacity:1;transform:scale(1)}
+}
 
-/* Overall stats banner */
-.overall-stats{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
-  margin-bottom:32px;
+/* Floating SVG shapes */
+.hero-shapes{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hero-shape{
+  position:absolute; opacity:0.06;
+  animation:float 20s ease-in-out infinite;
+}
+.hero-shape:nth-child(1){top:15%;left:8%;animation-delay:-3s;animation-duration:22s}
+.hero-shape:nth-child(2){top:60%;left:5%;animation-delay:-7s;animation-duration:18s}
+.hero-shape:nth-child(3){top:20%;right:10%;animation-delay:-11s;animation-duration:25s}
+.hero-shape:nth-child(4){bottom:15%;right:15%;animation-delay:-5s;animation-duration:20s}
+.hero-shape:nth-child(5){top:40%;left:50%;animation-delay:-9s;animation-duration:23s}
+@keyframes float{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  33%{transform:translateY(-18px) rotate(4deg)}
+  66%{transform:translateY(12px) rotate(-3deg)}
+}
+
+.hero-content{position:relative;z-index:2;max-width:760px;margin:0 auto}
+.hero-label{
+  display:inline-block; font-size:0.72rem; font-weight:600;
+  text-transform:uppercase; letter-spacing:0.12em;
+  color:var(--blue); background:rgba(37,99,235,0.12);
+  padding:6px 18px; border-radius:100px; margin-bottom:24px;
+  border:1px solid rgba(37,99,235,0.2);
+}
+.hero h1{
+  font-size:clamp(2.8rem, 6vw, 4.2rem);
+  font-weight:900; letter-spacing:-0.04em;
+  line-height:1.08; margin-bottom:12px;
+}
+.hero h1 span{
+  background:linear-gradient(135deg, #60A5FA, #A78BFA);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-tagline{
+  font-size:clamp(1rem, 2vw, 1.2rem);
+  font-weight:300; color:rgba(255,255,255,0.6);
+  max-width:600px; margin:0 auto 36px; line-height:1.6;
+}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hero-btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 28px; border-radius:12px; font-size:0.9rem;
+  font-weight:600; text-decoration:none; transition:all 0.2s;
+}
+.hero-btn-primary{
+  background:var(--blue); color:#fff;
+  box-shadow:0 4px 16px rgba(37,99,235,0.3);
+}
+.hero-btn-primary:hover{background:var(--blue-dark);transform:translateY(-1px);
+  box-shadow:0 8px 24px rgba(37,99,235,0.35)}
+.hero-btn-secondary{
+  background:rgba(255,255,255,0.08); color:#fff;
+  border:1px solid rgba(255,255,255,0.12);
+}
+.hero-btn-secondary:hover{background:rgba(255,255,255,0.14);transform:translateY(-1px)}
+
+/* ===================================================================
+   LAYOUT HELPERS
+   =================================================================== */
+.container{max-width:1120px;margin:0 auto;padding:0 32px}
+.section{padding:80px 0}
+.section-white{background:var(--bg-alt)}
+.section-gray{background:var(--bg)}
+.section-dark{background:linear-gradient(135deg, var(--dark-bg), var(--dark-bg-2));color:#fff}
+
+.section-header{text-align:center;margin-bottom:56px}
+.section-accent{
+  display:block;width:48px;height:3px;margin:0 auto 20px;
+  background:linear-gradient(90deg, var(--blue), var(--purple));
+  border-radius:2px;
+}
+.section-header h2{
+  font-size:clamp(1.6rem, 3vw, 2.2rem);
+  font-weight:800; letter-spacing:-0.03em;
+  margin-bottom:12px;
+}
+.section-header p{
+  color:var(--text-muted); font-size:1rem; font-weight:400;
+  max-width:640px; margin:0 auto; line-height:1.7;
+}
+.section-dark .section-header p{color:rgba(255,255,255,0.55)}
+
+/* ===================================================================
+   THE CHALLENGE SECTION
+   =================================================================== */
+.challenge-content{
+  max-width:760px; margin:0 auto;
+  font-size:1.05rem; line-height:1.85;
+  color:var(--text-secondary);
+}
+.challenge-content strong{color:var(--text);font-weight:600}
+.challenge-grid{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
+  margin-top:48px;
+}
+.challenge-card{
+  background:var(--bg); border-radius:16px; padding:28px;
+  border:1px solid var(--border);
+}
+.challenge-icon{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px; font-size:1.3rem;
+}
+.challenge-card h4{font-size:0.95rem;font-weight:700;margin-bottom:8px}
+.challenge-card p{font-size:0.85rem;color:var(--text-muted);line-height:1.6}
+
+/* ===================================================================
+   ARCHITECTURE SECTION
+   =================================================================== */
+.arch-overview{
+  max-width:760px; margin:0 auto 56px;
+  font-size:1rem; line-height:1.8;
+  color:rgba(255,255,255,0.55); text-align:center;
+}
+
+/* Agent cards */
+.agents-grid{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+  gap:20px; margin-bottom:64px;
+}
+.agent-card{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px; padding:28px 24px;
+  position:relative; overflow:hidden;
+  transition:transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.agent-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 8px 32px rgba(0,0,0,0.3);
+  border-color:rgba(255,255,255,0.15);
+}
+.agent-card::before{
+  content:""; position:absolute; top:0; left:0; right:0; height:3px;
+}
+.agent-card[data-agent="pl"]::before{background:var(--blue)}
+.agent-card[data-agent="mc"]::before{background:var(--green)}
+.agent-card[data-agent="cr"]::before{background:var(--amber)}
+.agent-card[data-agent="cc"]::before{background:var(--purple)}
+.agent-card[data-agent="ad"]::before{background:var(--red)}
+
+.agent-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:14px; font-size:0.85rem; font-weight:800;
+  color:#fff;
+}
+.agent-card[data-agent="pl"] .agent-icon{background:rgba(37,99,235,0.2);color:var(--blue)}
+.agent-card[data-agent="mc"] .agent-icon{background:rgba(22,163,74,0.2);color:var(--green)}
+.agent-card[data-agent="cr"] .agent-icon{background:rgba(217,119,6,0.2);color:var(--amber)}
+.agent-card[data-agent="cc"] .agent-icon{background:rgba(124,58,237,0.2);color:var(--purple)}
+.agent-card[data-agent="ad"] .agent-icon{background:rgba(220,38,38,0.2);color:var(--red)}
+
+.agent-card h4{
+  font-size:0.92rem; font-weight:700; color:#fff;
+  margin-bottom:8px;
+}
+.agent-card p{
+  font-size:0.82rem; color:rgba(255,255,255,0.5);
+  line-height:1.6;
+}
+
+/* Optimization loop flow */
+.loop-section-title{
+  text-align:center; font-size:1.15rem; font-weight:700;
+  color:#fff; margin-bottom:32px;
+}
+.flow-diagram{
+  display:flex; align-items:center; justify-content:center;
+  gap:0; flex-wrap:wrap; margin:0 auto;
+  max-width:900px;
+}
+.flow-step{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:12px; padding:14px 22px;
+  text-align:center; position:relative;
+  transition:background 0.15s;
+}
+.flow-step:hover{background:rgba(255,255,255,0.10)}
+.flow-step-label{font-size:0.82rem;font-weight:700;color:#fff}
+.flow-step-desc{font-size:0.7rem;color:rgba(255,255,255,0.4);margin-top:3px}
+.flow-arrow{
+  display:flex; align-items:center; padding:0 6px;
+  color:rgba(255,255,255,0.25); font-size:1.1rem;
+}
+.flow-return{
+  display:flex; align-items:center; justify-content:center;
+  gap:10px; margin-top:20px;
+  color:rgba(255,255,255,0.3); font-size:0.8rem; font-weight:500;
+}
+.flow-return-line{
+  flex:1; height:1px; max-width:120px;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+
+/* ===================================================================
+   ABLATION SECTION
+   =================================================================== */
+.ablation-intro{
+  max-width:700px; margin:0 auto 48px;
+  font-size:1rem; color:var(--text-secondary);
+  line-height:1.8; text-align:center;
+}
+.config-grid{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+  gap:20px;
+}
+.config-card{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:16px; padding:28px;
+  transition:transform 0.2s, box-shadow 0.2s;
+}
+.config-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.08)}
+.config-badge{
+  display:inline-block; font-size:0.68rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.08em;
+  padding:4px 12px; border-radius:6px; margin-bottom:14px;
+}
+.config-badge-default{background:var(--blue-light);color:var(--blue-dark)}
+.config-badge-ablation{background:var(--amber-light);color:var(--amber)}
+.config-badge-minimal{background:var(--purple-light);color:var(--purple)}
+.config-card h4{font-size:0.95rem;font-weight:700;margin-bottom:8px}
+.config-card p{font-size:0.84rem;color:var(--text-muted);line-height:1.6}
+.config-agents{
+  display:flex; gap:6px; margin-top:14px; flex-wrap:wrap;
+}
+.config-agent-dot{
+  width:28px; height:28px; border-radius:8px; font-size:0.62rem;
+  font-weight:800; display:flex; align-items:center; justify-content:center;
+  color:#fff;
+}
+.config-agent-dot.off{opacity:0.18;text-decoration:line-through}
+
+/* ===================================================================
+   RESULTS DASHBOARD
+   =================================================================== */
+.stats-banner{
+  background:rgba(255,255,255,0.75);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(226,232,240,0.8);
+  border-radius:20px; padding:8px;
+  margin-bottom:48px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.04);
+}
+.stats-banner-inner{
+  display:flex; align-items:center; justify-content:center;
 }
 .overall-stat{
-  background:var(--card);border:1px solid var(--border);border-radius:14px;
-  padding:20px 16px;text-align:center;
-  box-shadow:0 1px 4px rgba(0,0,0,0.03)
+  flex:1; text-align:center; padding:20px 16px;
 }
-.overall-value{font-size:1.8rem;font-weight:800;color:var(--blue)}
-.overall-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;
-  color:var(--text-muted);margin-top:4px;font-weight:600}
-
-/* Section title */
-.section-title{
-  font-size:1rem;font-weight:700;color:var(--text);margin-bottom:16px;
-  padding-left:4px;display:flex;align-items:center;gap:8px
+.stat-divider{
+  width:1px; height:40px; background:var(--border);
 }
-.section-title::before{
-  content:"";display:inline-block;width:4px;height:18px;background:var(--blue);
-  border-radius:2px
+.overall-value{
+  font-size:1.8rem; font-weight:800;
+  background:linear-gradient(135deg, var(--blue), var(--purple));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.overall-label{
+  font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em;
+  color:var(--text-muted); margin-top:4px; font-weight:600;
 }
 
-/* Experiment cards */
+/* Report quick links */
+.report-links{
+  display:flex; gap:12px; justify-content:center; margin-bottom:48px;
+  flex-wrap:wrap;
+}
+.report-link-btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 24px; border-radius:12px; font-size:0.88rem;
+  font-weight:600; text-decoration:none;
+  background:var(--blue); color:#fff;
+  transition:all 0.2s;
+  box-shadow:0 2px 8px rgba(37,99,235,0.2);
+}
+.report-link-btn:hover{background:var(--blue-dark);transform:translateY(-1px);
+  box-shadow:0 4px 16px rgba(37,99,235,0.3)}
+.report-link-secondary{
+  background:var(--card); color:var(--text); border:1px solid var(--border);
+  box-shadow:0 1px 4px rgba(0,0,0,0.04);
+}
+.report-link-secondary:hover{background:var(--bg);border-color:var(--blue);color:var(--blue)}
+
+/* ===================================================================
+   EXPERIMENT CARDS
+   =================================================================== */
 .exp-card{
-  background:var(--card);border:1px solid var(--border);border-radius:16px;
-  padding:28px 32px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);
-  transition:box-shadow 0.2s,transform 0.2s
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:32px 36px;
+  margin-bottom:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.04);
+  transition:box-shadow 0.25s, transform 0.25s;
 }
-.exp-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.09);transform:translateY(-1px)}
-.exp-header{display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap}
-.exp-header h2{font-size:1.3rem;font-weight:700}
-.domain-pill{background:#EEF2FF;color:var(--blue);padding:3px 14px;border-radius:14px;
-  font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
-.exp-desc{color:var(--text-muted);font-size:0.9rem;margin-bottom:16px}
+.exp-card:hover{
+  box-shadow:0 8px 32px rgba(0,0,0,0.08);
+  transform:translateY(-2px);
+}
+.exp-header{
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:10px; flex-wrap:wrap;
+}
+.exp-header h3{font-size:1.2rem;font-weight:700;letter-spacing:-0.01em}
+.domain-pill{
+  background:var(--blue-light); color:var(--blue-dark);
+  padding:4px 14px; border-radius:100px;
+  font-size:0.7rem; font-weight:600;
+  text-transform:uppercase; letter-spacing:0.06em;
+}
+.exp-desc{
+  color:var(--text-muted); font-size:0.9rem;
+  margin-bottom:20px; line-height:1.6;
+}
 
 /* Stats row */
-.exp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
-.stat{text-align:center;padding:12px 8px;background:#F8FAFC;border-radius:10px;
-  cursor:help;transition:background 0.15s}
-.stat:hover{background:#EEF2FF}
-.stat-value{font-size:1.25rem;font-weight:700;color:var(--text)}
-.stat-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;
-  color:var(--text-muted);margin-top:2px;font-weight:600}
+.exp-stats{
+  display:grid; grid-template-columns:repeat(6,1fr);
+  gap:10px; margin-bottom:20px;
+}
+.stat{
+  text-align:center; padding:14px 8px;
+  background:var(--bg); border-radius:12px;
+  cursor:help; transition:background 0.15s;
+  border:1px solid transparent;
+}
+.stat:hover{background:var(--blue-light);border-color:rgba(37,99,235,0.1)}
+.stat-value{font-size:1.15rem;font-weight:700;color:var(--text)}
+.stat-label{
+  font-size:0.65rem; text-transform:uppercase;
+  letter-spacing:0.06em; color:var(--text-muted);
+  margin-top:3px; font-weight:600;
+}
 .stat-detail{font-size:0.72rem;color:var(--text-muted);margin-top:2px}
 
 /* Task links */
 .exp-tasks{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.tasks-label{font-size:0.8rem;font-weight:600;color:var(--text-muted);
-  text-transform:uppercase;letter-spacing:0.04em}
-.task-link{
-  display:inline-block;padding:6px 16px;background:var(--blue);color:#fff;
-  border-radius:8px;font-size:0.82rem;font-weight:600;text-decoration:none;
-  transition:background 0.15s,transform 0.1s
+.tasks-label{
+  font-size:0.78rem; font-weight:600; color:var(--text-muted);
+  text-transform:uppercase; letter-spacing:0.06em;
 }
-.task-link:hover{background:#1D4ED8;transform:translateY(-1px)}
+.tasks-list{display:flex;gap:6px;flex-wrap:wrap}
+.task-link{
+  display:inline-block; padding:6px 14px;
+  background:var(--blue); color:#fff;
+  border-radius:8px; font-size:0.78rem; font-weight:600;
+  text-decoration:none; transition:all 0.15s;
+}
+.task-link:hover{background:var(--blue-dark);transform:translateY(-1px)}
 .no-reports{color:var(--text-muted);font-size:0.85rem;font-style:italic}
 
 /* Empty state */
@@ -97,107 +469,452 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 .empty-state p{color:var(--text-muted);font-size:1.05rem;font-weight:600}
 .empty-hint{color:var(--text-muted);font-size:0.88rem;font-weight:400;margin-top:6px}
 
-/* Glossary */
+/* ===================================================================
+   GLOSSARY
+   =================================================================== */
 .glossary{
-  background:var(--card);border:1px solid var(--border);border-radius:14px;
-  padding:20px 28px;margin-top:32px;margin-bottom:20px
+  background:var(--card); border:1px solid var(--border);
+  border-radius:16px; padding:24px 32px;
 }
 .glossary summary{
-  font-size:0.88rem;font-weight:700;color:var(--text);cursor:pointer;
-  list-style:none;display:flex;align-items:center;gap:8px
+  font-size:0.92rem; font-weight:700; color:var(--text);
+  cursor:pointer; list-style:none;
+  display:flex; align-items:center; gap:10px;
 }
-.glossary summary::before{content:"\25B6";font-size:0.6rem;transition:transform 0.2s}
+.glossary summary::-webkit-details-marker{display:none}
+.glossary summary::before{
+  content:"\25B6"; font-size:0.6rem; transition:transform 0.25s;
+  color:var(--text-muted);
+}
 .glossary[open] summary::before{transform:rotate(90deg)}
 .glossary-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;
-  margin-top:14px;font-size:0.84rem;color:var(--text-muted)
+  display:grid; grid-template-columns:1fr 1fr; gap:16px 28px;
+  margin-top:18px; font-size:0.86rem; color:var(--text-muted);
 }
 .glossary-item dt{font-weight:700;color:var(--text);margin-bottom:2px}
-.glossary-item dd{margin:0;line-height:1.5}
+.glossary-item dd{margin:0;line-height:1.6}
 
-/* Footer */
-.page-footer{text-align:center;color:var(--text-muted);font-size:0.8rem;
-  padding:24px 0;border-top:1px solid var(--border);margin-top:48px}
+/* ===================================================================
+   FOOTER
+   =================================================================== */
+.page-footer{
+  text-align:center; color:var(--text-muted); font-size:0.82rem;
+  padding:32px 0; border-top:1px solid var(--border); margin-top:64px;
+}
 .page-footer a{color:var(--blue);text-decoration:none}
 
-/* Responsive */
+/* ===================================================================
+   RESPONSIVE
+   =================================================================== */
+@media(max-width:900px){
+  .agents-grid{grid-template-columns:repeat(2,1fr)}
+  .exp-stats{grid-template-columns:repeat(3,1fr)}
+}
 @media(max-width:640px){
-  .overall-stats{grid-template-columns:repeat(2,1fr)}
+  .container{padding:0 20px}
+  .section{padding:56px 0}
+  .hero{padding:120px 20px 72px}
+  .hero h1{font-size:2rem}
+  .nav-links{display:none}
+  .agents-grid{grid-template-columns:1fr}
+  .config-grid{grid-template-columns:1fr}
+  .challenge-grid{grid-template-columns:1fr}
   .exp-stats{grid-template-columns:repeat(2,1fr)}
-  .exp-card{padding:20px 18px}
+  .exp-card{padding:22px 20px}
   .glossary-grid{grid-template-columns:1fr}
+  .stats-banner-inner{flex-wrap:wrap}
+  .stat-divider{display:none}
+  .overall-stat{min-width:45%}
+  .flow-diagram{flex-direction:column;gap:0}
+  .flow-arrow{transform:rotate(90deg);padding:4px 0}
 }
 </style>
 </head>
 <body>
-<header class="page-header">
-  <h1>Catalyst Lab Reports</h1>
-  <p>Multi-Agent Scientific Optimization &mdash; Experiment Dashboard</p>
-</header>
 
-<p class="intro">
-  Catalyst uses multiple AI agents (a project lead, medicinal chemist, critic,
-  computational chemist, and ADMET specialist) to collaboratively optimize molecules.
-  Each report below shows the full agent conversation, property evaluations, and optimization decisions.
-</p>
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">Catalyst<span>.</span></a>
+    <div class="nav-links">
+      <a href="#challenge">The Challenge</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#ablation">Ablation Study</a>
+      <a href="#results">Results</a>
+      <a href="#experiments">Experiments</a>
+    </div>
+  </div>
+</nav>
 
+<!-- ============================================================
+     HERO SECTION
+     ============================================================ -->
+<section class="hero" id="hero">
+  <div class="hero-shapes">
+    <!-- Hexagon shapes -->
+    <svg class="hero-shape" width="120" height="120" viewBox="0 0 120 120">
+      <polygon points="60,5 110,30 110,90 60,115 10,90 10,30" fill="none" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+    <svg class="hero-shape" width="80" height="80" viewBox="0 0 120 120">
+      <polygon points="60,5 110,30 110,90 60,115 10,90 10,30" fill="none" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+    <svg class="hero-shape" width="100" height="100" viewBox="0 0 120 120">
+      <polygon points="60,5 110,30 110,90 60,115 10,90 10,30" fill="none" stroke="#fff" stroke-width="1.5"/>
+      <circle cx="60" cy="60" r="20" fill="none" stroke="#fff" stroke-width="1"/>
+    </svg>
+    <svg class="hero-shape" width="60" height="60" viewBox="0 0 120 120">
+      <polygon points="60,5 110,30 110,90 60,115 10,90 10,30" fill="none" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+    <!-- Molecule-like structure -->
+    <svg class="hero-shape" width="140" height="140" viewBox="0 0 140 140">
+      <circle cx="70" cy="70" r="16" fill="none" stroke="#fff" stroke-width="1.5"/>
+      <circle cx="30" cy="40" r="10" fill="none" stroke="#fff" stroke-width="1"/>
+      <circle cx="110" cy="40" r="10" fill="none" stroke="#fff" stroke-width="1"/>
+      <circle cx="30" cy="100" r="10" fill="none" stroke="#fff" stroke-width="1"/>
+      <circle cx="110" cy="100" r="10" fill="none" stroke="#fff" stroke-width="1"/>
+      <line x1="56" y1="62" x2="38" y2="46" stroke="#fff" stroke-width="1"/>
+      <line x1="84" y1="62" x2="102" y2="46" stroke="#fff" stroke-width="1"/>
+      <line x1="56" y1="78" x2="38" y2="94" stroke="#fff" stroke-width="1"/>
+      <line x1="84" y1="78" x2="102" y2="94" stroke="#fff" stroke-width="1"/>
+    </svg>
+  </div>
+  <div class="hero-content">
+    <div class="hero-label">Multi-Agent Scientific Optimization</div>
+    <h1>Catalyst<span>.</span></h1>
+    <p class="hero-tagline">
+      A collaborative AI system where specialized agents work together
+      to optimize molecules for drug discovery.
+    </p>
+    <div class="hero-actions">
+      <a href="#results" class="hero-btn hero-btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3v18h18"/><path d="M7 16l4-8 4 4 6-10"/></svg>
+        View Results
+      </a>
+      <a href="#architecture" class="hero-btn hero-btn-secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4m10-10h-4M6 12H2m15.07-7.07l-2.83 2.83M9.76 14.24l-2.83 2.83m12.14 0l-2.83-2.83M9.76 9.76L6.93 6.93"/></svg>
+        How It Works
+      </a>
+    </div>
+  </div>
+</section>
 
-    <div class="overall-stats">
-      <div class="overall-stat">
-        <div class="overall-value">4</div>
-        <div class="overall-label">Experiments</div>
+<!-- ============================================================
+     THE CHALLENGE
+     ============================================================ -->
+<section class="section section-white" id="challenge">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-accent"></span>
+      <h2>The Challenge</h2>
+      <p>Why molecular optimization is hard</p>
+    </div>
+    <div class="challenge-content">
+      Drug discovery requires optimizing molecules across <strong>multiple competing properties</strong> &mdash;
+      reducing lipophilicity while maintaining drug-likeness, lowering molecular weight while preserving
+      biological activity. These multi-objective optimization problems are inherently difficult because
+      <strong>improving one property often degrades another</strong>.
+      Traditional single-metric approaches miss critical trade-offs, leading to molecules
+      that look good on paper but fail in practice.
+    </div>
+    <div class="challenge-grid">
+      <div class="challenge-card">
+        <div class="challenge-icon" style="background:var(--blue-light);color:var(--blue)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18m-6-6l6 6 6-6"/></svg>
+        </div>
+        <h4>Multi-Objective Trade-offs</h4>
+        <p>Reducing LogP (lipophilicity) often increases molecular weight.
+           Improving QED (drug-likeness) may reduce synthetic accessibility.
+           Balancing these requires expert judgment.</p>
       </div>
-      <div class="overall-stat">
-        <div class="overall-value">62</div>
-        <div class="overall-label">Total Tasks</div>
+      <div class="challenge-card">
+        <div class="challenge-icon" style="background:var(--green-light);color:var(--green)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+        </div>
+        <h4>Chemical Validity</h4>
+        <p>Proposed modifications must produce chemically valid, synthetically
+           feasible molecules. Invalid suggestions waste optimization rounds
+           and make no progress toward the goal.</p>
       </div>
-      <div class="overall-stat">
-        <div class="overall-value">56</div>
-        <div class="overall-label">Succeeded</div>
+      <div class="challenge-card">
+        <div class="challenge-icon" style="background:var(--purple-light);color:var(--purple)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12"/><path d="M2 12h4m6-10v4"/></svg>
+        </div>
+        <h4>ADMET Properties</h4>
+        <p>A drug candidate must have favorable Absorption, Distribution,
+           Metabolism, Excretion, and Toxicity profiles. Ignoring ADMET
+           leads to late-stage clinical failures.</p>
       </div>
-      <div class="overall-stat">
-        <div class="overall-value">90%</div>
-        <div class="overall-label">Success Rate</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     HOW CATALYST WORKS
+     ============================================================ -->
+<section class="section section-dark" id="architecture">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-accent"></span>
+      <h2 style="color:#fff">How Catalyst Works</h2>
+      <p>A multi-agent architecture for molecular optimization</p>
+    </div>
+
+    <p class="arch-overview">
+      Catalyst decomposes the optimization problem into specialized roles.
+      Five AI agents collaborate in a structured loop &mdash; proposing modifications,
+      critiquing them, evaluating properties, and deciding whether to continue or stop.
+      Each agent brings domain expertise that no single model can match alone.
+    </p>
+
+    <!-- Agent Cards -->
+    <div class="agents-grid">
+      <div class="agent-card" data-agent="pl">
+        <div class="agent-icon">PL</div>
+        <h4>Project Lead</h4>
+        <p>Orchestrates the optimization process. Analyzes objectives,
+           delegates tasks, and makes final selection decisions
+           (ADVANCE or TERMINATE).</p>
+      </div>
+      <div class="agent-card" data-agent="mc">
+        <div class="agent-icon">MC</div>
+        <h4>Medicinal Chemist</h4>
+        <p>Proposes structural modifications to the molecule based on
+           chemical intuition and optimization objectives.
+           The core creative agent.</p>
+      </div>
+      <div class="agent-card" data-agent="cr">
+        <div class="agent-icon">CR</div>
+        <h4>Critic</h4>
+        <p>Reviews proposals for chemical validity, synthetic feasibility,
+           and potential issues. Suggests improvements before
+           evaluation.</p>
+      </div>
+      <div class="agent-card" data-agent="cc">
+        <div class="agent-icon">CC</div>
+        <h4>Computational Chemist</h4>
+        <p>Evaluates proposed molecules by computing molecular properties
+           (LogP, QED, MW, tPSA, HBD, HBA) and Tanimoto similarity.</p>
+      </div>
+      <div class="agent-card" data-agent="ad">
+        <div class="agent-icon">AD</div>
+        <h4>ADMET Specialist</h4>
+        <p>Assesses pharmacokinetic properties &mdash; Absorption, Distribution,
+           Metabolism, Excretion, and Toxicity &mdash; to guide drug-like optimization.</p>
       </div>
     </div>
 
-<div style="text-align:center;margin-bottom:28px">
-  <a href="highlights.html" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#2563EB 0%,#7C3AED 100%);color:#fff;border-radius:12px;font-size:1rem;font-weight:700;text-decoration:none;box-shadow:0 4px 14px rgba(37,99,235,0.3);transition:transform 0.15s,box-shadow 0.15s">View Highlighted Results &amp; Ablation Comparisons</a>
-  <p style="color:#64748B;font-size:0.82rem;margin-top:10px">Curated best examples from 60 optimization tasks across 3 agent configurations</p>
-</div>
+    <!-- Optimization Loop -->
+    <div class="loop-section-title">The Optimization Loop</div>
+    <div class="flow-diagram">
+      <div class="flow-step" style="border-color:rgba(22,163,74,0.3)">
+        <div class="flow-step-label" style="color:var(--green)">Propose</div>
+        <div class="flow-step-desc">Medicinal Chemist</div>
+      </div>
+      <div class="flow-arrow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+      </div>
+      <div class="flow-step" style="border-color:rgba(217,119,6,0.3)">
+        <div class="flow-step-label" style="color:var(--amber)">Critique</div>
+        <div class="flow-step-desc">Critic</div>
+      </div>
+      <div class="flow-arrow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+      </div>
+      <div class="flow-step" style="border-color:rgba(22,163,74,0.3)">
+        <div class="flow-step-label" style="color:var(--green)">Revise</div>
+        <div class="flow-step-desc">Medicinal Chemist</div>
+      </div>
+      <div class="flow-arrow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+      </div>
+      <div class="flow-step" style="border-color:rgba(124,58,237,0.3)">
+        <div class="flow-step-label" style="color:var(--purple)">Evaluate</div>
+        <div class="flow-step-desc">Comp. Chemist + ADMET</div>
+      </div>
+      <div class="flow-arrow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+      </div>
+      <div class="flow-step" style="border-color:rgba(37,99,235,0.3)">
+        <div class="flow-step-label" style="color:var(--blue)">Decide</div>
+        <div class="flow-step-desc">Project Lead</div>
+      </div>
+    </div>
+    <div class="flow-return">
+      <div class="flow-return-line"></div>
+      <span>Next Round (if ADVANCE)</span>
+      <div class="flow-return-line"></div>
+    </div>
+  </div>
+</section>
 
-<details class="glossary">
-  <summary>What do the metrics mean?</summary>
-  <dl class="glossary-grid">
-    <div class="glossary-item">
-      <dt>Success Rate</dt>
-      <dd>How many optimization tasks completed with an improved molecule
-          vs. total tasks attempted.</dd>
+<!-- ============================================================
+     ABLATION STUDY
+     ============================================================ -->
+<section class="section section-gray" id="ablation">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-accent"></span>
+      <h2>Ablation Study</h2>
+      <p>Understanding each agent's contribution</p>
     </div>
-    <div class="glossary-item">
-      <dt>LogP Change</dt>
-      <dd>Average change in lipophilicity (fat-solubility). Negative = more
-          water-soluble; positive = more fat-soluble. Drug-like range: &minus;0.4 to 5.6.</dd>
+    <p class="ablation-intro">
+      To understand the contribution of each agent, we run <strong>ablation experiments</strong> &mdash;
+      systematically removing one agent at a time and measuring the impact on optimization quality.
+      This reveals which roles are critical and how the agents complement each other.
+    </p>
+    <div class="config-grid">
+      <div class="config-card">
+        <span class="config-badge config-badge-default">Baseline</span>
+        <h4>Default (All Agents)</h4>
+        <p>Full 5-agent system with all roles active. The complete Catalyst pipeline as designed.</p>
+        <div class="config-agents">
+          <div class="config-agent-dot" style="background:var(--blue)" title="Project Lead">PL</div>
+          <div class="config-agent-dot" style="background:var(--green)" title="Medicinal Chemist">MC</div>
+          <div class="config-agent-dot" style="background:var(--amber)" title="Critic">CR</div>
+          <div class="config-agent-dot" style="background:var(--purple)" title="Computational Chemist">CC</div>
+          <div class="config-agent-dot" style="background:var(--red)" title="ADMET Specialist">AD</div>
+        </div>
+      </div>
+      <div class="config-card">
+        <span class="config-badge config-badge-ablation">Ablation</span>
+        <h4>No Critic</h4>
+        <p>Remove the Critic agent. Proposals go directly from the Medicinal Chemist to evaluation without review.</p>
+        <div class="config-agents">
+          <div class="config-agent-dot" style="background:var(--blue)" title="Project Lead">PL</div>
+          <div class="config-agent-dot" style="background:var(--green)" title="Medicinal Chemist">MC</div>
+          <div class="config-agent-dot off" style="background:var(--amber)" title="Critic (removed)">CR</div>
+          <div class="config-agent-dot" style="background:var(--purple)" title="Computational Chemist">CC</div>
+          <div class="config-agent-dot" style="background:var(--red)" title="ADMET Specialist">AD</div>
+        </div>
+      </div>
+      <div class="config-card">
+        <span class="config-badge config-badge-ablation">Ablation</span>
+        <h4>No ADMET</h4>
+        <p>Remove the ADMET Specialist. No pharmacokinetic assessment; optimization relies only on computed properties.</p>
+        <div class="config-agents">
+          <div class="config-agent-dot" style="background:var(--blue)" title="Project Lead">PL</div>
+          <div class="config-agent-dot" style="background:var(--green)" title="Medicinal Chemist">MC</div>
+          <div class="config-agent-dot" style="background:var(--amber)" title="Critic">CR</div>
+          <div class="config-agent-dot" style="background:var(--purple)" title="Computational Chemist">CC</div>
+          <div class="config-agent-dot off" style="background:var(--red)" title="ADMET Specialist (removed)">AD</div>
+        </div>
+      </div>
+      <div class="config-card">
+        <span class="config-badge config-badge-minimal">Minimal</span>
+        <h4>Single Agent</h4>
+        <p>Only the Medicinal Chemist and Computational Chemist. No orchestration, critique, or ADMET review.</p>
+        <div class="config-agents">
+          <div class="config-agent-dot off" style="background:var(--blue)" title="Project Lead (removed)">PL</div>
+          <div class="config-agent-dot" style="background:var(--green)" title="Medicinal Chemist">MC</div>
+          <div class="config-agent-dot off" style="background:var(--amber)" title="Critic (removed)">CR</div>
+          <div class="config-agent-dot" style="background:var(--purple)" title="Computational Chemist">CC</div>
+          <div class="config-agent-dot off" style="background:var(--red)" title="ADMET Specialist (removed)">AD</div>
+        </div>
+      </div>
     </div>
-    <div class="glossary-item">
-      <dt>Total Tasks</dt>
-      <dd>Number of separate molecule-optimization tasks run in the experiment.
-          Each task starts from a different molecule.</dd>
-    </div>
-    <div class="glossary-item">
-      <dt>Runtime</dt>
-      <dd>Total wall-clock time for all tasks in the experiment to complete,
-          including agent discussion and property evaluation.</dd>
-    </div>
-  </dl>
-</details>
+  </div>
+</section>
 
-<div class="section-title">Experiments</div>
+<!-- ============================================================
+     RESULTS DASHBOARD
+     ============================================================ -->
+<section class="section section-white" id="results">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-accent"></span>
+      <h2>Results Dashboard</h2>
+      <p>Aggregate metrics across all experiments</p>
+    </div>
 
+    
+    <div class="stats-banner">
+      <div class="stats-banner-inner">
+        <div class="overall-stat">
+          <div class="overall-value">5</div>
+          <div class="overall-label">Experiments</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="overall-stat">
+          <div class="overall-value">82</div>
+          <div class="overall-label">Total Tasks</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="overall-stat">
+          <div class="overall-value">74</div>
+          <div class="overall-label">Succeeded</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="overall-stat">
+          <div class="overall-value">90%</div>
+          <div class="overall-label">Success Rate</div>
+        </div>
+      </div>
+    </div>
+
+    
+      <div class="report-links">
+        <a href="comparison.html" class="report-link-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-8 4 4 6-10"/></svg>
+          View Comparison Report
+        </a>
+        <a href="highlights.html" class="report-link-btn report-link-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          View Highlights
+        </a>
+      </div>
+
+    <!-- EXPERIMENTS -->
+    <div id="experiments" style="scroll-margin-top:72px">
+      <div class="section-header" style="margin-bottom:32px">
+        <h2 style="font-size:1.4rem">Experiment Reports</h2>
+        <p>Detailed per-experiment results and individual task reports</p>
+      </div>
+
+      
+        <div class="exp-card">
+          <div class="exp-header">
+            <h3>default_20t_2r</h3>
+            <span class="domain-pill">Drug Discovery</span>
+          </div>
+          <p class="exp-desc">Default multi-agent lead optimization with all agents enabled (vLLM + Llama 3)</p>
+          <div class="exp-stats">
+            <div class="stat" title="Number of optimization tasks that completed successfully out of total tasks">
+              <div class="stat-value" style="color:var(--green)">18/20</div>
+              <div class="stat-label">Success Rate</div>
+              <div class="stat-detail">90%</div>
+            </div>
+            <div class="stat" title="Total number of optimization tasks in this experiment">
+              <div class="stat-value">20</div>
+              <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat" title="Average change in LogP (lipophilicity) across tasks">
+              <div class="stat-value">-1.51</div>
+              <div class="stat-label">Avg LogP Delta</div>
+            </div>
+            <div class="stat" title="Average change in QED (drug-likeness) across tasks">
+              <div class="stat-value">+0.010</div>
+              <div class="stat-label">Avg QED Delta</div>
+            </div>
+            <div class="stat" title="Fraction of proposed molecules that were chemically valid">
+              <div class="stat-value">88%</div>
+              <div class="stat-label">Validity Rate</div>
+            </div>
+            <div class="stat" title="Total wall-clock time for the experiment to complete">
+              <div class="stat-value">1.7h</div>
+              <div class="stat-label">Runtime</div>
+            </div>
+          </div>
+          <div class="exp-tasks">
+            <span class="tasks-label">Reports:</span>
+            <div class="tasks-list"><span class="no-reports">No reports generated yet</span></div>
+          </div>
+        </div>
 
         <div class="exp-card">
           <div class="exp-header">
-            <h2>live_vllm_test</h2>
+            <h3>live_vllm_test</h3>
             <span class="domain-pill">Drug Discovery</span>
           </div>
           <p class="exp-desc">No description available</p>
@@ -211,9 +928,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
               <div class="stat-value">2</div>
               <div class="stat-label">Total Tasks</div>
             </div>
-            <div class="stat" title="Average change in LogP (lipophilicity) across tasks. Negative means molecules became more water-soluble, positive means more fat-soluble.">
+            <div class="stat" title="Average change in LogP (lipophilicity) across tasks">
               <div class="stat-value">-0.30</div>
-              <div class="stat-label">Avg LogP Change</div>
+              <div class="stat-label">Avg LogP Delta</div>
+            </div>
+            <div class="stat" title="Average change in QED (drug-likeness) across tasks">
+              <div class="stat-value">-0.023</div>
+              <div class="stat-label">Avg QED Delta</div>
+            </div>
+            <div class="stat" title="Fraction of proposed molecules that were chemically valid">
+              <div class="stat-value">100%</div>
+              <div class="stat-label">Validity Rate</div>
             </div>
             <div class="stat" title="Total wall-clock time for the experiment to complete">
               <div class="stat-value">5m</div>
@@ -221,14 +946,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
             </div>
           </div>
           <div class="exp-tasks">
-            <span class="tasks-label">View Reports:</span>
+            <span class="tasks-label">Reports:</span>
             <div class="tasks-list"><a href="report_live_vllm_test_chatdrug_001.html" class="task-link">chatdrug_001</a> <a href="report_live_vllm_test_chatdrug_002.html" class="task-link">chatdrug_002</a></div>
           </div>
         </div>
 
         <div class="exp-card">
           <div class="exp-header">
-            <h2>no_admet_20t_2r</h2>
+            <h3>no_admet_20t_2r</h3>
             <span class="domain-pill">Drug Discovery</span>
           </div>
           <p class="exp-desc">Ablation study: disable the ADMET Specialist agent</p>
@@ -242,9 +967,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
               <div class="stat-value">20</div>
               <div class="stat-label">Total Tasks</div>
             </div>
-            <div class="stat" title="Average change in LogP (lipophilicity) across tasks. Negative means molecules became more water-soluble, positive means more fat-soluble.">
+            <div class="stat" title="Average change in LogP (lipophilicity) across tasks">
               <div class="stat-value">-1.50</div>
-              <div class="stat-label">Avg LogP Change</div>
+              <div class="stat-label">Avg LogP Delta</div>
+            </div>
+            <div class="stat" title="Average change in QED (drug-likeness) across tasks">
+              <div class="stat-value">+0.042</div>
+              <div class="stat-label">Avg QED Delta</div>
+            </div>
+            <div class="stat" title="Fraction of proposed molecules that were chemically valid">
+              <div class="stat-value">87%</div>
+              <div class="stat-label">Validity Rate</div>
             </div>
             <div class="stat" title="Total wall-clock time for the experiment to complete">
               <div class="stat-value">1.4h</div>
@@ -252,14 +985,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
             </div>
           </div>
           <div class="exp-tasks">
-            <span class="tasks-label">View Reports:</span>
+            <span class="tasks-label">Reports:</span>
             <div class="tasks-list"><a href="report_no_admet_20t_2r_chatdrug_001.html" class="task-link">chatdrug_001</a> <a href="report_no_admet_20t_2r_chatdrug_002.html" class="task-link">chatdrug_002</a> <a href="report_no_admet_20t_2r_chatdrug_003.html" class="task-link">chatdrug_003</a> <a href="report_no_admet_20t_2r_chatdrug_004.html" class="task-link">chatdrug_004</a> <a href="report_no_admet_20t_2r_chatdrug_005.html" class="task-link">chatdrug_005</a> <a href="report_no_admet_20t_2r_chatdrug_006.html" class="task-link">chatdrug_006</a> <a href="report_no_admet_20t_2r_chatdrug_007.html" class="task-link">chatdrug_007</a> <a href="report_no_admet_20t_2r_chatdrug_008.html" class="task-link">chatdrug_008</a> <a href="report_no_admet_20t_2r_chatdrug_009.html" class="task-link">chatdrug_009</a> <a href="report_no_admet_20t_2r_chatdrug_010.html" class="task-link">chatdrug_010</a> <a href="report_no_admet_20t_2r_chatdrug_011.html" class="task-link">chatdrug_011</a> <a href="report_no_admet_20t_2r_chatdrug_012.html" class="task-link">chatdrug_012</a> <a href="report_no_admet_20t_2r_chatdrug_013.html" class="task-link">chatdrug_013</a> <a href="report_no_admet_20t_2r_chatdrug_014.html" class="task-link">chatdrug_014</a> <a href="report_no_admet_20t_2r_chatdrug_015.html" class="task-link">chatdrug_015</a> <a href="report_no_admet_20t_2r_chatdrug_016.html" class="task-link">chatdrug_016</a> <a href="report_no_admet_20t_2r_chatdrug_017.html" class="task-link">chatdrug_017</a> <a href="report_no_admet_20t_2r_chatdrug_018.html" class="task-link">chatdrug_018</a> <a href="report_no_admet_20t_2r_chatdrug_019.html" class="task-link">chatdrug_019</a> <a href="report_no_admet_20t_2r_chatdrug_020.html" class="task-link">chatdrug_020</a></div>
           </div>
         </div>
 
         <div class="exp-card">
           <div class="exp-header">
-            <h2>no_critic_20t_2r</h2>
+            <h3>no_critic_20t_2r</h3>
             <span class="domain-pill">Drug Discovery</span>
           </div>
           <p class="exp-desc">Ablation study: disable the Critic agent (skip critique and revise steps)</p>
@@ -273,9 +1006,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
               <div class="stat-value">20</div>
               <div class="stat-label">Total Tasks</div>
             </div>
-            <div class="stat" title="Average change in LogP (lipophilicity) across tasks. Negative means molecules became more water-soluble, positive means more fat-soluble.">
+            <div class="stat" title="Average change in LogP (lipophilicity) across tasks">
               <div class="stat-value">-1.61</div>
-              <div class="stat-label">Avg LogP Change</div>
+              <div class="stat-label">Avg LogP Delta</div>
+            </div>
+            <div class="stat" title="Average change in QED (drug-likeness) across tasks">
+              <div class="stat-value">+0.042</div>
+              <div class="stat-label">Avg QED Delta</div>
+            </div>
+            <div class="stat" title="Fraction of proposed molecules that were chemically valid">
+              <div class="stat-value">86%</div>
+              <div class="stat-label">Validity Rate</div>
             </div>
             <div class="stat" title="Total wall-clock time for the experiment to complete">
               <div class="stat-value">1.3h</div>
@@ -283,14 +1024,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
             </div>
           </div>
           <div class="exp-tasks">
-            <span class="tasks-label">View Reports:</span>
+            <span class="tasks-label">Reports:</span>
             <div class="tasks-list"><a href="report_no_critic_20t_2r_chatdrug_001.html" class="task-link">chatdrug_001</a> <a href="report_no_critic_20t_2r_chatdrug_002.html" class="task-link">chatdrug_002</a> <a href="report_no_critic_20t_2r_chatdrug_003.html" class="task-link">chatdrug_003</a> <a href="report_no_critic_20t_2r_chatdrug_004.html" class="task-link">chatdrug_004</a> <a href="report_no_critic_20t_2r_chatdrug_005.html" class="task-link">chatdrug_005</a> <a href="report_no_critic_20t_2r_chatdrug_006.html" class="task-link">chatdrug_006</a> <a href="report_no_critic_20t_2r_chatdrug_007.html" class="task-link">chatdrug_007</a> <a href="report_no_critic_20t_2r_chatdrug_008.html" class="task-link">chatdrug_008</a> <a href="report_no_critic_20t_2r_chatdrug_009.html" class="task-link">chatdrug_009</a> <a href="report_no_critic_20t_2r_chatdrug_010.html" class="task-link">chatdrug_010</a> <a href="report_no_critic_20t_2r_chatdrug_011.html" class="task-link">chatdrug_011</a> <a href="report_no_critic_20t_2r_chatdrug_012.html" class="task-link">chatdrug_012</a> <a href="report_no_critic_20t_2r_chatdrug_013.html" class="task-link">chatdrug_013</a> <a href="report_no_critic_20t_2r_chatdrug_014.html" class="task-link">chatdrug_014</a> <a href="report_no_critic_20t_2r_chatdrug_015.html" class="task-link">chatdrug_015</a> <a href="report_no_critic_20t_2r_chatdrug_016.html" class="task-link">chatdrug_016</a> <a href="report_no_critic_20t_2r_chatdrug_017.html" class="task-link">chatdrug_017</a> <a href="report_no_critic_20t_2r_chatdrug_018.html" class="task-link">chatdrug_018</a> <a href="report_no_critic_20t_2r_chatdrug_019.html" class="task-link">chatdrug_019</a> <a href="report_no_critic_20t_2r_chatdrug_020.html" class="task-link">chatdrug_020</a></div>
           </div>
         </div>
 
         <div class="exp-card">
           <div class="exp-header">
-            <h2>single_agent_20t_2r</h2>
+            <h3>single_agent_20t_2r</h3>
             <span class="domain-pill">Drug Discovery</span>
           </div>
           <p class="exp-desc">Ablation study: single agent (only Medicinal Chemist + Computational Chemist, no discussion)</p>
@@ -304,9 +1045,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
               <div class="stat-value">20</div>
               <div class="stat-label">Total Tasks</div>
             </div>
-            <div class="stat" title="Average change in LogP (lipophilicity) across tasks. Negative means molecules became more water-soluble, positive means more fat-soluble.">
+            <div class="stat" title="Average change in LogP (lipophilicity) across tasks">
               <div class="stat-value">-1.39</div>
-              <div class="stat-label">Avg LogP Change</div>
+              <div class="stat-label">Avg LogP Delta</div>
+            </div>
+            <div class="stat" title="Average change in QED (drug-likeness) across tasks">
+              <div class="stat-value">+0.030</div>
+              <div class="stat-label">Avg QED Delta</div>
+            </div>
+            <div class="stat" title="Fraction of proposed molecules that were chemically valid">
+              <div class="stat-value">89%</div>
+              <div class="stat-label">Validity Rate</div>
             </div>
             <div class="stat" title="Total wall-clock time for the experiment to complete">
               <div class="stat-value">57m</div>
@@ -314,13 +1063,69 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
             </div>
           </div>
           <div class="exp-tasks">
-            <span class="tasks-label">View Reports:</span>
+            <span class="tasks-label">Reports:</span>
             <div class="tasks-list"><a href="report_single_agent_20t_2r_chatdrug_001.html" class="task-link">chatdrug_001</a> <a href="report_single_agent_20t_2r_chatdrug_002.html" class="task-link">chatdrug_002</a> <a href="report_single_agent_20t_2r_chatdrug_003.html" class="task-link">chatdrug_003</a> <a href="report_single_agent_20t_2r_chatdrug_004.html" class="task-link">chatdrug_004</a> <a href="report_single_agent_20t_2r_chatdrug_005.html" class="task-link">chatdrug_005</a> <a href="report_single_agent_20t_2r_chatdrug_006.html" class="task-link">chatdrug_006</a> <a href="report_single_agent_20t_2r_chatdrug_007.html" class="task-link">chatdrug_007</a> <a href="report_single_agent_20t_2r_chatdrug_008.html" class="task-link">chatdrug_008</a> <a href="report_single_agent_20t_2r_chatdrug_009.html" class="task-link">chatdrug_009</a> <a href="report_single_agent_20t_2r_chatdrug_010.html" class="task-link">chatdrug_010</a> <a href="report_single_agent_20t_2r_chatdrug_011.html" class="task-link">chatdrug_011</a> <a href="report_single_agent_20t_2r_chatdrug_012.html" class="task-link">chatdrug_012</a> <a href="report_single_agent_20t_2r_chatdrug_013.html" class="task-link">chatdrug_013</a> <a href="report_single_agent_20t_2r_chatdrug_014.html" class="task-link">chatdrug_014</a> <a href="report_single_agent_20t_2r_chatdrug_015.html" class="task-link">chatdrug_015</a> <a href="report_single_agent_20t_2r_chatdrug_016.html" class="task-link">chatdrug_016</a> <a href="report_single_agent_20t_2r_chatdrug_017.html" class="task-link">chatdrug_017</a> <a href="report_single_agent_20t_2r_chatdrug_018.html" class="task-link">chatdrug_018</a> <a href="report_single_agent_20t_2r_chatdrug_019.html" class="task-link">chatdrug_019</a> <a href="report_single_agent_20t_2r_chatdrug_020.html" class="task-link">chatdrug_020</a></div>
           </div>
         </div>
+    </div>
 
+    <!-- GLOSSARY -->
+    <details class="glossary" style="margin-top:48px">
+      <summary>Metric Glossary</summary>
+      <dl class="glossary-grid">
+        <div class="glossary-item">
+          <dt>LogP (Lipophilicity)</dt>
+          <dd>Partition coefficient measuring fat-solubility vs. water-solubility.
+              Drug-like range: &minus;0.4 to 5.6. Lower is generally better for absorption.</dd>
+        </div>
+        <div class="glossary-item">
+          <dt>QED (Drug-Likeness)</dt>
+          <dd>Quantitative Estimate of Drug-likeness. Ranges from 0 to 1;
+              higher values indicate more drug-like molecular profiles.</dd>
+        </div>
+        <div class="glossary-item">
+          <dt>Molecular Weight (MW)</dt>
+          <dd>Total molecular mass in Daltons. Lipinski's Rule of Five suggests
+              MW &lt; 500 Da for oral bioavailability.</dd>
+        </div>
+        <div class="glossary-item">
+          <dt>tPSA (Polar Surface Area)</dt>
+          <dd>Topological polar surface area in Angstroms squared. Affects membrane
+              permeability; tPSA &lt; 140 is preferred for oral drugs.</dd>
+        </div>
+        <div class="glossary-item">
+          <dt>HBD / HBA</dt>
+          <dd>Hydrogen Bond Donors and Acceptors. Lipinski suggests HBD &le; 5
+              and HBA &le; 10 for good oral absorption.</dd>
+        </div>
+        <div class="glossary-item">
+          <dt>Validity Rate</dt>
+          <dd>Fraction of proposed SMILES strings that parse into valid, chemically
+              meaningful molecules. Higher validity means fewer wasted optimization rounds.</dd>
+        </div>
+        <div class="glossary-item">
+          <dt>Tanimoto Similarity</dt>
+          <dd>Molecular fingerprint similarity between starting and optimized molecules.
+              Ranges from 0 (completely different) to 1 (identical).</dd>
+        </div>
+        <div class="glossary-item">
+          <dt>Success Rate</dt>
+          <dd>Fraction of optimization tasks where the final molecule met all
+              specified optimization objectives.</dd>
+        </div>
+      </dl>
+    </details>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
 <footer class="page-footer">
-  Generated by <strong>Catalyst</strong> &mdash; Multi-Agent Scientific Optimization Framework
+  <div class="container">
+    Generated by <strong>Catalyst</strong> &mdash; Multi-Agent Scientific Optimization Framework
+  </div>
 </footer>
+
 </body>
 </html>
