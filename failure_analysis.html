@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalyst &mdash; Failure Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#2563EB;--blue-dark:#1E40AF;--blue-light:#DBEAFE;
+  --green:#16A34A;--green-light:#DCFCE7;
+  --amber:#D97706;--amber-light:#FEF3C7;
+  --purple:#7C3AED;--purple-light:#EDE9FE;
+  --red:#DC2626;--red-light:#FEE2E2;
+  --bg:#F8FAFC;--bg-alt:#FFFFFF;--card:#FFFFFF;
+  --border:#E2E8F0;--text:#0F172A;--text-secondary:#334155;--text-muted:#64748B;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;
+  -webkit-font-smoothing:antialiased}
+
+/* Navigation */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(15,23,42,0.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,0.06)}
+.nav-inner{max-width:1120px;margin:0 auto;display:flex;align-items:center;
+  justify-content:space-between;padding:0 32px;height:56px}
+.nav-brand{font-weight:800;font-size:1.05rem;color:#fff;text-decoration:none;letter-spacing:-0.03em}
+.nav-brand span{color:var(--blue)}
+.nav-back{color:rgba(255,255,255,0.6);font-size:0.82rem;text-decoration:none;
+  display:flex;align-items:center;gap:6px;transition:color 0.15s}
+.nav-back:hover{color:#fff}
+
+/* Page header */
+.page-hero{background:linear-gradient(135deg,#0F172A,#1E293B);color:#fff;
+  padding:100px 32px 64px;text-align:center;margin-top:56px;position:relative;overflow:hidden}
+.page-hero::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse 600px 300px at 30% 50%,rgba(220,38,38,0.12),transparent 70%),
+  radial-gradient(ellipse 400px 300px at 70% 40%,rgba(124,58,237,0.08),transparent 70%);
+  pointer-events:none}
+.page-hero h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-0.04em;
+  margin-bottom:12px;position:relative}
+.page-hero p{color:rgba(255,255,255,0.55);font-size:1.05rem;max-width:600px;
+  margin:0 auto;position:relative;line-height:1.7}
+
+/* Layout */
+.container{max-width:1120px;margin:0 auto;padding:0 32px}
+.section{padding:72px 0}
+.section-white{background:var(--bg-alt)}
+.section-gray{background:var(--bg)}
+
+.section-header{margin-bottom:40px}
+.section-header h2{font-size:1.6rem;font-weight:800;letter-spacing:-0.03em;
+  display:flex;align-items:center;gap:12px}
+.section-header h2::before{content:"";display:inline-block;width:4px;height:24px;
+  background:linear-gradient(180deg,var(--blue),var(--purple));border-radius:2px}
+.section-header p{color:var(--text-muted);font-size:0.95rem;margin-top:8px;max-width:700px}
+.section-intro{color:var(--text-secondary);font-size:0.95rem;line-height:1.8;
+  max-width:800px;margin-bottom:32px}
+
+/* Summary grid */
+.summary-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-bottom:28px}
+.summary-card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:20px 16px;text-align:center}
+.summary-value{font-size:1.8rem;font-weight:800;color:var(--text)}
+.summary-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;
+  color:var(--text-muted);margin-top:4px;font-weight:600}
+
+/* Category groups */
+.cat-group{background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:32px;margin-bottom:24px}
+.cat-group-header{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.cat-group-title{font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:10px}
+.cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.cat-group-count{font-size:0.82rem;font-weight:600;color:var(--text-muted);
+  background:var(--bg);padding:4px 14px;border-radius:8px}
+.cat-desc{color:var(--text-secondary);font-size:0.9rem;line-height:1.7;margin-bottom:20px}
+.cat-examples{display:flex;flex-direction:column;gap:10px}
+.cat-example{background:var(--bg);border-radius:10px;padding:14px 18px}
+.cat-example-header{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.cat-task{font-size:0.82rem;font-weight:700;font-family:monospace}
+.cat-tag{font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:6px;
+  text-transform:uppercase;letter-spacing:0.05em}
+.tag-red{background:var(--red-light);color:var(--red)}
+.tag-purple{background:var(--purple-light);color:var(--purple)}
+.tag-amber{background:var(--amber-light);color:var(--amber)}
+.cat-example-detail{font-size:0.84rem;color:var(--text-muted);line-height:1.6}
+
+/* Cross-experiment matrix */
+.table-wrap{overflow-x:auto;margin-bottom:24px;border-radius:12px;
+  border:1px solid var(--border)}
+.matrix-table{width:100%;border-collapse:collapse;font-size:0.82rem}
+.matrix-table th{background:var(--bg);padding:10px 14px;text-align:left;
+  font-weight:700;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;
+  color:var(--text-muted);border-bottom:2px solid var(--border)}
+.matrix-table td{padding:10px 14px;border-bottom:1px solid var(--border)}
+.cell-fail{color:var(--red);font-weight:700;text-align:center}
+.cell-pass{color:var(--green);font-weight:600;text-align:center}
+.cell-task{font-family:monospace;font-weight:600}
+.cell-cat{font-size:0.78rem;color:var(--text-muted)}
+.row-multi{background:rgba(220,38,38,0.03)}
+
+.matrix-insights{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.insight-card{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:20px;text-align:center}
+.insight-value{font-size:1.6rem;font-weight:800;color:var(--blue)}
+.insight-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;
+  color:var(--text-muted);margin-top:4px;font-weight:600}
+
+/* Case studies */
+.case-study{background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:32px;margin-bottom:24px}
+.case-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.case-num{font-size:0.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.08em;color:var(--text-muted)}
+.case-study h4{font-size:1.1rem;font-weight:700;margin-bottom:12px;font-family:monospace}
+.case-desc{color:var(--text-secondary);font-size:0.9rem;line-height:1.7;margin-bottom:16px}
+.case-quote{border-left:3px solid var(--red);padding:12px 20px;margin:16px 0;
+  background:rgba(220,38,38,0.03);border-radius:0 8px 8px 0;
+  font-size:0.88rem;color:var(--text-secondary);line-height:1.6;font-style:italic}
+.case-verdict{color:var(--text-secondary);font-size:0.9rem;line-height:1.7;
+  padding:16px 20px;background:var(--bg);border-radius:10px;margin-top:16px}
+.eval-table{width:100%;border-collapse:collapse;font-size:0.82rem}
+.eval-table th{background:var(--bg);padding:8px 12px;text-align:right;
+  font-weight:700;font-size:0.72rem;text-transform:uppercase;
+  letter-spacing:0.05em;color:var(--text-muted);border-bottom:2px solid var(--border)}
+.eval-table th:first-child{text-align:center}
+.eval-table td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--border)}
+.eval-table td:first-child{text-align:center}
+.row-good{background:rgba(22,163,74,0.06)}
+
+/* Root causes */
+.root-cause-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.rc-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:28px;position:relative}
+.rc-card-primary{border-color:rgba(220,38,38,0.2)}
+.rc-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;
+  justify-content:center;margin-bottom:16px}
+.rc-card h4{font-size:1rem;font-weight:700;margin-bottom:12px}
+.rc-card p{font-size:0.88rem;color:var(--text-secondary);line-height:1.7;margin-bottom:12px}
+.rc-impact{font-size:0.84rem;background:var(--bg);border-radius:8px;padding:12px 16px;
+  margin-top:16px;line-height:1.6;color:var(--text-secondary)}
+
+/* Solutions */
+.solutions-grid{display:grid;gap:24px}
+.solution-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:28px;position:relative;overflow:hidden}
+.solution-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+.solution-high::before{background:var(--green)}
+.solution-medium::before{background:var(--amber)}
+.solution-safety::before{background:var(--blue)}
+.solution-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.solution-priority{font-size:0.68rem;font-weight:700;padding:4px 12px;border-radius:6px;
+  text-transform:uppercase;letter-spacing:0.06em}
+.priority-high{background:var(--green-light);color:var(--green)}
+.priority-medium{background:var(--amber-light);color:var(--amber)}
+.priority-safety{background:var(--blue-light);color:var(--blue-dark)}
+.solution-card h4{font-size:1rem;font-weight:700}
+.solution-card p{font-size:0.88rem;color:var(--text-secondary);line-height:1.7;margin-bottom:12px}
+.solution-detail{font-size:0.84rem;background:var(--bg);border-radius:8px;padding:12px 16px;
+  margin-bottom:10px;line-height:1.6;color:var(--text-secondary)}
+.solution-detail code{background:rgba(37,99,235,0.08);padding:2px 6px;border-radius:4px;
+  font-size:0.8rem;color:var(--blue-dark)}
+
+/* Footer */
+.page-footer{text-align:center;color:var(--text-muted);font-size:0.82rem;
+  padding:32px 0;border-top:1px solid var(--border);margin-top:48px}
+
+/* Responsive */
+@media(max-width:900px){
+  .summary-grid{grid-template-columns:repeat(3,1fr)}
+  .root-cause-grid{grid-template-columns:1fr}
+  .matrix-insights{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .container{padding:0 20px}
+  .section{padding:48px 0}
+  .summary-grid{grid-template-columns:repeat(2,1fr)}
+  .page-hero{padding:80px 20px 48px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">Catalyst<span>.</span></a>
+    <a href="index.html" class="nav-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+      Back to Dashboard
+    </a>
+  </div>
+</nav>
+
+<section class="page-hero">
+  <h1>Failure Analysis</h1>
+  <p>Understanding why 10% of optimization tasks fail and how to fix them</p>
+</section>
+
+<!-- SUMMARY -->
+<section class="section section-white">
+  <div class="container">
+    <div class="section-header">
+      <h2>Overview</h2>
+      <p>Aggregate failure statistics across all experiment configurations</p>
+    </div>
+    
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-value">5</div>
+        <div class="summary-label">Experiments</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value">82</div>
+        <div class="summary-label">Total Tasks</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value" style="color:var(--green)">74</div>
+        <div class="summary-label">Succeeded</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value" style="color:var(--red)">8</div>
+        <div class="summary-label">Failed</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value">90%</div>
+        <div class="summary-label">Success Rate</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-value">7</div>
+        <div class="summary-label">Unique Failing Tasks</div>
+      </div>
+    </div>
+    <p class="section-intro">
+      Across 5 experiment configurations, 8 task-level failures
+      were observed involving 7 unique task IDs. Each experiment achieves
+      90% success rate (18/20), with exactly 2 failures per configuration.
+      The failures cluster into two distinct root causes that are
+      actionable and fixable.
+    </p>
+  </div>
+</section>
+
+<!-- FAILURE CATEGORIES -->
+<section class="section section-gray">
+  <div class="container">
+    <div class="section-header">
+      <h2>Failure Categories</h2>
+      <p>Two distinct root causes account for all observed failures</p>
+    </div>
+    
+    <div class="cat-group">
+      <div class="cat-group-header">
+        <div class="cat-group-title">
+          <span class="cat-dot" style="background:var(--red)"></span>
+          Category 1: Project Lead Decision Failures
+        </div>
+        <div class="cat-group-count">5 of 8 failures</div>
+      </div>
+      <p class="cat-desc">
+        Valid molecules with genuine property improvements exist in the evaluation data,
+        but the <strong>Project Lead agent terminates the optimization prematurely</strong>.
+        The LLM fails to correctly read or interpret the Computational Chemist's evaluation
+        output and claims data is missing or insufficient when it clearly is not.
+      </p>
+      <div class="cat-examples">
+
+        <div class="cat-example">
+          <div class="cat-example-header">
+            <span class="cat-task">default_20t_2r / chatdrug_007</span>
+            <span class="cat-tag tag-red">9 valid evals ignored</span>
+          </div>
+          <div class="cat-example-detail">
+            Best LogP delta: <strong>-5.42</strong> &mdash;
+            PL reason: <em>&ldquo;No new analogues were generated or evaluated in this round, and the current lead still violates both Lipinski criteria (&hellip;&rdquo;</em>
+          </div>
+        </div>
+
+        <div class="cat-example">
+          <div class="cat-example-header">
+            <span class="cat-task">default_20t_2r / chatdrug_016</span>
+            <span class="cat-tag tag-red">4 valid evals ignored</span>
+          </div>
+          <div class="cat-example-detail">
+            Best LogP delta: <strong>-2.97</strong> &mdash;
+            PL reason: <em>&ldquo;Insufficient evaluation data to confirm that any proposed molecule achieves the required log P reduction without comprom&hellip;&rdquo;</em>
+          </div>
+        </div>
+
+        <div class="cat-example">
+          <div class="cat-example-header">
+            <span class="cat-task">no_admet_20t_2r / chatdrug_009</span>
+            <span class="cat-tag tag-red">3 valid evals ignored</span>
+          </div>
+          <div class="cat-example-detail">
+            Best LogP delta: <strong>-1.26</strong> &mdash;
+            PL reason: <em>&ldquo;Insufficient evidence of improvement – the Computational Chemist’s evaluation did not supply concrete property values (e&hellip;&rdquo;</em>
+          </div>
+        </div>
+
+        <div class="cat-example">
+          <div class="cat-example-header">
+            <span class="cat-task">no_admet_20t_2r / chatdrug_013</span>
+            <span class="cat-tag tag-red">3 valid evals ignored</span>
+          </div>
+          <div class="cat-example-detail">
+            Best LogP delta: <strong>-0.95</strong> &mdash;
+            PL reason: <em>&ldquo;Insufficient property data for the proposed molecules prevents an informed decision on whether any of them represent a g&hellip;&rdquo;</em>
+          </div>
+        </div>
+
+        <div class="cat-example">
+          <div class="cat-example-header">
+            <span class="cat-task">no_critic_20t_2r / chatdrug_016</span>
+            <span class="cat-tag tag-red">1 valid evals ignored</span>
+          </div>
+          <div class="cat-example-detail">
+            Best LogP delta: <strong>+0.00</strong> &mdash;
+            PL reason: <em>&ldquo;No chemically valid proposals were provided; the only evaluated molecule (the starting scaffold) does not meet the logP &hellip;&rdquo;</em>
+          </div>
+        </div>
+</div></div>
+
+    <div class="cat-group">
+      <div class="cat-group-header">
+        <div class="cat-group-title">
+          <span class="cat-dot" style="background:var(--purple)"></span>
+          Category 2: Invalid SMILES Generation
+        </div>
+        <div class="cat-group-count">3 of 8 failures</div>
+      </div>
+      <p class="cat-desc">
+        The Medicinal Chemist proposes SMILES strings that <strong>RDKit cannot parse</strong>
+        into valid molecules. With zero valid evaluations, the Project Lead correctly
+        terminates since there is nothing to advance.
+      </p>
+      <div class="cat-examples">
+
+        <div class="cat-example">
+          <div class="cat-example-header">
+            <span class="cat-task">no_critic_20t_2r / chatdrug_004</span>
+            <span class="cat-tag tag-purple">0 evals, 0 valid</span>
+          </div>
+          <div class="cat-example-detail">
+            Starting LogP: <strong>6.14</strong> &mdash;
+            PL reason: <em>&ldquo;No viable proposals were generated in Round 1, and the current lead still has logP = 6.14 (well above the target). Witho&hellip;&rdquo;</em>
+          </div>
+        </div>
+
+        <div class="cat-example">
+          <div class="cat-example-header">
+            <span class="cat-task">single_agent_20t_2r / chatdrug_006</span>
+            <span class="cat-tag tag-purple">3 evals, 0 valid</span>
+          </div>
+          <div class="cat-example-detail">
+            Starting LogP: <strong>5.55</strong> &mdash;
+            PL reason: <em>&ldquo;No valid proposals were submitted in round 1, so no progress toward lowering logP can be made.&hellip;&rdquo;</em>
+          </div>
+        </div>
+
+        <div class="cat-example">
+          <div class="cat-example-header">
+            <span class="cat-task">single_agent_20t_2r / chatdrug_011</span>
+            <span class="cat-tag tag-purple">0 evals, 0 valid</span>
+          </div>
+          <div class="cat-example-detail">
+            Starting LogP: <strong>5.12</strong> &mdash;
+            PL reason: <em>&ldquo;No valid SMILES proposals were submitted in Round 1, so no progress toward reducing the high logP (5.12) can be evaluate&hellip;&rdquo;</em>
+          </div>
+        </div>
+</div></div>
+  </div>
+</section>
+
+<!-- CROSS-EXPERIMENT MATRIX -->
+<section class="section section-white">
+  <div class="container">
+    <div class="section-header">
+      <h2>Cross-Experiment Consistency</h2>
+      <p>Which tasks fail across which configurations</p>
+    </div>
+    
+    <p class="section-intro">
+      This matrix shows which tasks fail across which experiment configurations.
+      Tasks that fail in multiple configurations indicate <strong>molecule-intrinsic
+      difficulty</strong>, while configuration-specific failures point to
+      agent-specific weaknesses.
+    </p>
+    <div class="table-wrap">
+      <table class="matrix-table">
+        <thead><tr><th>Task ID</th><th title="default_20t_2r">default</th><th title="live_vllm_test">live_vllm_test</th><th title="no_admet_20t_2r">no_admet</th><th title="no_critic_20t_2r">no_critic</th><th title="single_agent_20t_2r">single_agent</th><th>Category</th></tr></thead>
+        <tbody><tr class=""><td class="cell-task">chatdrug_004</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-cat">No Proposals Generated</td></tr><tr class=""><td class="cell-task">chatdrug_006</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-cat">All Proposed SMILES Invalid</td></tr><tr class=""><td class="cell-task">chatdrug_007</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">Project Lead Misreads Evaluation Data</td></tr><tr class=""><td class="cell-task">chatdrug_009</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">Project Lead Misreads Evaluation Data</td></tr><tr class=""><td class="cell-task">chatdrug_011</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-cat">No Proposals Generated</td></tr><tr class=""><td class="cell-task">chatdrug_013</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">Project Lead Misreads Evaluation Data</td></tr><tr class="row-multi"><td class="cell-task">chatdrug_016</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-cat">Project Lead Misreads Evaluation Data</td></tr></tbody>
+      </table>
+    </div>
+    <div class="matrix-insights">
+      <div class="insight-card">
+        <div class="insight-value">7</div>
+        <div class="insight-label">Unique failing tasks</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-value">1</div>
+        <div class="insight-label">Tasks failing in 2+ configs</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-value">6</div>
+        <div class="insight-label">Config-specific failures</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CASE STUDIES -->
+<section class="section section-gray">
+  <div class="container">
+    <div class="section-header">
+      <h2>Detailed Case Studies</h2>
+      <p>Deep dive into representative failures with actual agent outputs</p>
+    </div>
+    
+        <div class="case-study">
+          <div class="case-header">
+            <span class="case-num">Case Study 1</span>
+            <span class="case-tag tag-red">PL Decision Failure</span>
+          </div>
+          <h4>default_20t_2r / chatdrug_007</h4>
+          <p class="case-desc">
+            9 valid molecules were evaluated with LogP reductions
+            up to -5.42, yet the Project Lead terminated with:
+          </p>
+          <blockquote class="case-quote">
+            &ldquo;TERMINATE: No new analogues were generated or evaluated in this round, and the current lead still violates both Lipinski criteria (MW &gt; 500, LogP &gt; 5). Without any improvement toward the logP and molecular weight objectives, further rounds are unlikely to yield progress.&rdquo;
+          </blockquote>
+          <p class="case-desc"><strong>What the evaluation data actually showed:</strong></p>
+          <div class="table-wrap">
+            <table class="eval-table">
+              <thead>
+                <tr><th>#</th><th>LogP</th><th>Delta LogP</th><th>QED</th><th>MW</th><th>Similarity</th></tr>
+              </thead>
+              <tbody><tr class="">
+              <td>1</td><td>5.51</td><td>+0.00</td>
+              <td>0.341</td><td>501.7</td><td>1.000</td>
+            </tr><tr class="row-good">
+              <td>2</td><td>0.13</td><td>-5.38</td>
+              <td>0.485</td><td>87.1</td><td>0.093</td>
+            </tr><tr class="row-good">
+              <td>3</td><td>4.31</td><td>-1.20</td>
+              <td>0.558</td><td>425.6</td><td>0.741</td>
+            </tr><tr class="row-good">
+              <td>4</td><td>4.50</td><td>-1.01</td>
+              <td>0.378</td><td>503.6</td><td>0.639</td>
+            </tr><tr class="row-good">
+              <td>5</td><td>1.91</td><td>-3.60</td>
+              <td>0.894</td><td>269.3</td><td>0.262</td>
+            </tr><tr class="row-good">
+              <td>6</td><td>0.09</td><td>-5.42</td>
+              <td>0.430</td><td>60.0</td><td>0.100</td>
+            </tr></tbody>
+            </table>
+          </div>
+          <p class="case-verdict">
+            The PL claims &ldquo;no new analogues were generated&rdquo; or
+            &ldquo;insufficient data&rdquo; despite clear evidence of improvement.
+            This is a <strong>reading comprehension failure</strong> by the LLM &mdash;
+            the evaluation data is present in the conversation but the PL fails to
+            parse it correctly.
+          </p>
+        </div>
+
+        <div class="case-study">
+          <div class="case-header">
+            <span class="case-num">Case Study 2</span>
+            <span class="case-tag tag-red">PL Decision Failure</span>
+          </div>
+          <h4>default_20t_2r / chatdrug_016</h4>
+          <p class="case-desc">
+            4 valid evaluations with LogP reductions were available,
+            but the PL terminated:
+          </p>
+          <blockquote class="case-quote">
+            &ldquo;TERMINATE: Insufficient evaluation data to confirm that any proposed molecule achieves the required log P reduction without compromising other objectives.&rdquo;
+          </blockquote>
+          <div class="table-wrap">
+            <table class="eval-table">
+              <thead><tr><th>#</th><th>LogP</th><th>Delta</th><th>Similarity</th></tr></thead>
+              <tbody><tr class="row-good">
+              <td>1</td><td>3.61</td><td>-1.17</td><td>0.738</td>
+            </tr><tr class="row-good">
+              <td>2</td><td>1.81</td><td>-2.97</td><td>0.070</td>
+            </tr><tr class="row-good">
+              <td>3</td><td>3.00</td><td>-1.78</td><td>0.594</td>
+            </tr><tr class="row-good">
+              <td>4</td><td>3.11</td><td>-1.67</td><td>0.453</td>
+            </tr></tbody>
+            </table>
+          </div>
+          <p class="case-verdict">
+            The Computational Chemist provided a detailed property table in its output,
+            but the PL states it &ldquo;did not supply concrete property values.&rdquo;
+            The similarity column showed <code>None</code> in the CC's text rendering
+            (even though similarity was computed by the tool), and the PL latched onto
+            this as evidence of missing data.
+          </p>
+        </div>
+
+        <div class="case-study">
+          <div class="case-header">
+            <span class="case-num">Case Study 3</span>
+            <span class="case-tag tag-purple">Invalid SMILES</span>
+          </div>
+          <h4>no_critic_20t_2r / chatdrug_004</h4>
+          <p class="case-desc">
+            The Medicinal Chemist proposed 0 molecule(s), but
+            <strong>none could be parsed</strong> by RDKit into a valid molecular structure.
+            Starting LogP was 6.14, with the optimization goal to reduce it.
+          </p>
+          <p class="case-desc">
+            With zero valid evaluations, the Project Lead correctly terminated:
+          </p>
+          <blockquote class="case-quote">
+            &ldquo;No viable proposals were generated in Round 1, and the current lead still has logP = 6.14 (well above the target). Without any improvement toward the primary objective, further rounds are unlikely to yield progress.&rdquo;
+          </blockquote>
+          <p class="case-verdict">
+            This is a <strong>SMILES generation quality</strong> issue. The LLM
+            generates character sequences that look like SMILES but contain subtle
+            errors (unclosed rings, invalid valences, broken bracket atoms).
+            The system currently has no retry mechanism &mdash; once proposals
+            fail validation, the round is lost.
+          </p>
+        </div>
+  </div>
+</section>
+
+<!-- ROOT CAUSES -->
+<section class="section section-white">
+  <div class="container">
+    <div class="section-header">
+      <h2>Root Cause Analysis</h2>
+      <p>The underlying mechanisms behind each failure category</p>
+    </div>
+    
+    <div class="root-cause-grid">
+      <div class="rc-card rc-card-primary">
+        <div class="rc-icon" style="background:var(--red-light);color:var(--red)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h4>Root Cause 1: Project Lead Reading Comprehension</h4>
+        <p>
+          The Project Lead receives a generic instruction: <em>&ldquo;Review all
+          evaluations and recommendations from this round.&rdquo;</em> It must
+          read back through the full multi-agent conversation (7 messages with
+          complex markdown tables) to find the evaluation data.
+        </p>
+        <p>
+          With long conversations and markdown-formatted property tables,
+          <strong>gpt-oss-120b loses track of the actual numbers</strong> and
+          hallucinates that data is missing. This is exacerbated when the
+          Computational Chemist's text rendering shows <code>None</code> for
+          similarity (even though the tool computed it).
+        </p>
+        <div class="rc-impact">
+          <strong>Impact:</strong> 50% of all failures (4 out of 8) are caused
+          by this issue. These are the most wasteful failures because valid,
+          improved molecules exist but are discarded.
+        </div>
+      </div>
+      <div class="rc-card">
+        <div class="rc-icon" style="background:var(--purple-light);color:var(--purple)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+        </div>
+        <h4>Root Cause 2: SMILES Generation Quality</h4>
+        <p>
+          The Medicinal Chemist generates SMILES strings that fail RDKit
+          parsing. These contain subtle syntax errors: unclosed ring
+          numbers, invalid valences, or broken stereochemistry annotations.
+        </p>
+        <p>
+          The system has <strong>no retry mechanism</strong>: once a proposal
+          fails validation during <code>extract_evaluations</code>, it is
+          recorded as invalid and the round proceeds. If all proposals are
+          invalid, the Project Lead must terminate.
+        </p>
+        <div class="rc-impact">
+          <strong>Impact:</strong> 50% of all failures (4 out of 8). Unlike
+          Root Cause 1, these represent genuine LLM generation limitations,
+          though a retry mechanism could recover from them.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROPOSED SOLUTIONS -->
+<section class="section section-gray">
+  <div class="container">
+    <div class="section-header">
+      <h2>Proposed Solutions</h2>
+      <p>Actionable fixes ranked by expected impact</p>
+    </div>
+    
+    <div class="solutions-grid">
+      <div class="solution-card solution-high">
+        <div class="solution-header">
+          <span class="solution-priority priority-high">Highest Impact</span>
+          <h4>Inject Structured Evaluation Summary into Decide Prompt</h4>
+        </div>
+        <p>
+          Instead of relying on the PL to read back through the CC's free-text
+          narrative, inject a <strong>programmatically-formatted evaluation
+          summary</strong> directly into the <code>decide</code> instruction.
+        </p>
+        <div class="solution-detail">
+          <strong>How:</strong> After <code>extract_evaluations()</code>,
+          format the ground-truth results (SMILES, LogP, delta, similarity)
+          as a simple table and pass it as a template variable into the
+          decide prompt.
+        </div>
+        <div class="solution-detail">
+          <strong>Expected effect:</strong> Eliminates all 4 PL reading
+          comprehension failures immediately. The PL sees clean, unambiguous
+          data instead of having to parse markdown from prior messages.
+        </div>
+      </div>
+      <div class="solution-card solution-medium">
+        <div class="solution-header">
+          <span class="solution-priority priority-medium">Medium Impact</span>
+          <h4>Retry on All-Invalid Proposals</h4>
+        </div>
+        <p>
+          When all proposals from the MC are invalid SMILES, instead of
+          proceeding to the decide step (which inevitably terminates),
+          <strong>retry the propose step</strong> with feedback about what
+          went wrong.
+        </p>
+        <div class="solution-detail">
+          <strong>How:</strong> After evaluation, if <code>all(not ev.is_valid
+          for ev in round_evals)</code>, re-run the propose step with an
+          error message listing which SMILES failed and why.
+        </div>
+        <div class="solution-detail">
+          <strong>Expected effect:</strong> Addresses the 4 invalid-SMILES
+          failures by giving the MC a second chance. Many of these errors
+          are minor syntax issues that the LLM can correct when told about them.
+        </div>
+      </div>
+      <div class="solution-card solution-safety">
+        <div class="solution-header">
+          <span class="solution-priority priority-safety">Safety Net</span>
+          <h4>Decision Validation Guardrail</h4>
+        </div>
+        <p>
+          After the PL issues a TERMINATE decision, <strong>check if valid
+          evaluations with objective improvements exist</strong>. If so,
+          automatically advance the best candidate instead of terminating.
+        </p>
+        <div class="solution-detail">
+          <strong>How:</strong> In <code>lab_session.py</code>, after
+          <code>_process_decision()</code>, verify that termination is
+          justified by checking <code>round_evals</code> for improvements.
+        </div>
+        <div class="solution-detail">
+          <strong>Expected effect:</strong> A safety net that catches any
+          remaining PL reading failures. Would recover all Category 1
+          failures even if the prompt fix is imperfect.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="page-footer">
+  <div class="container">
+    Generated by <strong>Catalyst</strong> &mdash; Multi-Agent Scientific Optimization Framework
+  </div>
+</footer>
+
+</body>
+</html>
