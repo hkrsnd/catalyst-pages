@@ -305,6 +305,65 @@ body{
 }
 
 /* ===================================================================
+   HOW WE MEASURE SECTION
+   =================================================================== */
+.measure-intro{
+  max-width:760px; margin:0 auto 48px;
+  font-size:1.05rem; line-height:1.85;
+  color:var(--text-secondary); text-align:center;
+}
+.measure-intro strong{color:var(--text);font-weight:600}
+.measure-callout{
+  background:linear-gradient(135deg, var(--blue-light), var(--purple-light));
+  border-radius:16px; padding:28px 36px;
+  display:flex; align-items:flex-start; gap:16px;
+  margin:0 auto 48px; max-width:760px;
+  border:1px solid rgba(37,99,235,0.12);
+}
+.measure-callout svg{flex-shrink:0;margin-top:2px;color:var(--blue)}
+.measure-callout p{font-size:0.92rem;line-height:1.7;color:var(--text-secondary)}
+.measure-callout strong{color:var(--text)}
+
+.metric-table-wrap{
+  overflow-x:auto; border-radius:16px;
+  border:1px solid var(--border);
+  background:var(--card);
+  box-shadow:0 1px 3px rgba(0,0,0,0.04);
+}
+.metric-table{
+  width:100%; border-collapse:collapse;
+  font-size:0.88rem;
+}
+.metric-table thead{background:var(--bg)}
+.metric-table th{
+  padding:14px 20px; text-align:left;
+  font-weight:700; font-size:0.72rem;
+  text-transform:uppercase; letter-spacing:0.06em;
+  color:var(--text-muted); border-bottom:2px solid var(--border);
+}
+.metric-table td{
+  padding:14px 20px; border-bottom:1px solid var(--border-light);
+  color:var(--text-secondary); line-height:1.6;
+}
+.metric-table tr:last-child td{border-bottom:none}
+.metric-table tr:hover td{background:rgba(37,99,235,0.02)}
+.metric-name{font-weight:700;color:var(--text);white-space:nowrap}
+.metric-code{
+  font-family:'SF Mono',Consolas,monospace;
+  font-size:0.78rem; color:var(--purple);
+  background:var(--purple-light); padding:2px 8px;
+  border-radius:4px; white-space:nowrap;
+}
+.metric-type{
+  display:inline-block; font-size:0.68rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.06em;
+  padding:3px 10px; border-radius:6px; white-space:nowrap;
+}
+.metric-type-exact{background:var(--green-light);color:var(--green)}
+.metric-type-model{background:var(--amber-light);color:var(--amber)}
+.metric-type-composite{background:var(--blue-light);color:var(--blue)}
+
+/* ===================================================================
    ABLATION SECTION
    =================================================================== */
 .ablation-intro{
@@ -541,6 +600,7 @@ body{
     <div class="nav-links">
       <a href="#challenge">The Challenge</a>
       <a href="#architecture">Architecture</a>
+      <a href="#measurement">Measurement</a>
       <a href="#ablation">Ablation Study</a>
       <a href="#results">Results</a>
       <a href="#experiments">Experiments</a>
@@ -751,6 +811,100 @@ body{
 </section>
 
 <!-- ============================================================
+     HOW WE MEASURE
+     ============================================================ -->
+<section class="section section-white" id="measurement">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-accent"></span>
+      <h2>How We Measure</h2>
+      <p>All metrics are computed in silico &mdash; no wet-lab experiments required</p>
+    </div>
+
+    <div class="measure-intro">
+      Every molecular property reported by Catalyst is computed <strong>purely from the SMILES string</strong>
+      (a text encoding of the molecular graph) using <strong>RDKit</strong>, an open-source cheminformatics library.
+      Given only the atoms and bonds, RDKit can calculate physicochemical descriptors in milliseconds.
+      Some metrics are <strong>deterministic calculations</strong> from molecular structure; others are
+      <strong>predictive models</strong> trained on experimental data.
+    </div>
+
+    <div class="measure-callout">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+      <p>
+        <strong>No synthesis, no assays, no instruments.</strong>
+        The Computational Chemist agent receives pre-computed RDKit results before its turn.
+        This means every candidate molecule is evaluated objectively and instantly &mdash;
+        the agents discuss and reason about these ground-truth numbers, not estimates.
+      </p>
+    </div>
+
+    <div class="metric-table-wrap">
+      <table class="metric-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>RDKit Function</th>
+            <th>Type</th>
+            <th>How It Works</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="metric-name">MW (Da)</td>
+            <td><code class="metric-code">Descriptors.MolWt</code></td>
+            <td><span class="metric-type metric-type-exact">Exact</span></td>
+            <td>Sum of atomic masses from the molecular formula &mdash; pure arithmetic on atom counts.</td>
+          </tr>
+          <tr>
+            <td class="metric-name">LogP</td>
+            <td><code class="metric-code">Descriptors.MolLogP</code></td>
+            <td><span class="metric-type metric-type-model">Predictive</span></td>
+            <td>Wildman&ndash;Crippen method: assigns each atom a fragment-based hydrophobicity contribution and sums them. Trained on experimental partition coefficients.</td>
+          </tr>
+          <tr>
+            <td class="metric-name">HBD</td>
+            <td><code class="metric-code">CalcNumHBD</code></td>
+            <td><span class="metric-type metric-type-exact">Exact</span></td>
+            <td>Counts OH and NH groups via SMARTS pattern matching on the molecular graph.</td>
+          </tr>
+          <tr>
+            <td class="metric-name">HBA</td>
+            <td><code class="metric-code">CalcNumHBA</code></td>
+            <td><span class="metric-type metric-type-exact">Exact</span></td>
+            <td>Counts nitrogen and oxygen atoms that can accept hydrogen bonds &mdash; topological pattern matching.</td>
+          </tr>
+          <tr>
+            <td class="metric-name">tPSA (&Aring;&sup2;)</td>
+            <td><code class="metric-code">Descriptors.TPSA</code></td>
+            <td><span class="metric-type metric-type-model">Predictive</span></td>
+            <td>Ertl method: fragment-based sum of tabulated surface-area contributions for each polar atom (N, O, S, P and their hydrogens).</td>
+          </tr>
+          <tr>
+            <td class="metric-name">QED</td>
+            <td><code class="metric-code">QED.qed</code></td>
+            <td><span class="metric-type metric-type-composite">Composite</span></td>
+            <td>Combines MW, LogP, HBD, HBA, tPSA, rotatable bonds, aromatic rings, and structural alerts through a desirability function trained on ~700 approved drugs.</td>
+          </tr>
+          <tr>
+            <td class="metric-name">Lipinski Violations</td>
+            <td><code class="metric-code">CheckLipinski</code></td>
+            <td><span class="metric-type metric-type-exact">Exact</span></td>
+            <td>Checks four thresholds: MW &gt; 500, LogP &gt; 5, HBD &gt; 5, HBA &gt; 10. Count of violations (0 = ideal).</td>
+          </tr>
+          <tr>
+            <td class="metric-name">Similarity</td>
+            <td><code class="metric-code">TanimotoSimilarity</code></td>
+            <td><span class="metric-type metric-type-exact">Exact</span></td>
+            <td>Each molecule is hashed into a 2048-bit Morgan fingerprint (ECFP4, radius 2). Tanimoto coefficient = |intersection| / |union| of the two bit vectors.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
      ABLATION STUDY
      ============================================================ -->
 <section class="section section-gray" id="ablation">
@@ -833,22 +987,22 @@ body{
     <div class="stats-banner">
       <div class="stats-banner-inner">
         <div class="overall-stat">
-          <div class="overall-value">5</div>
+          <div class="overall-value">6</div>
           <div class="overall-label">Experiments</div>
         </div>
         <div class="stat-divider"></div>
         <div class="overall-stat">
-          <div class="overall-value">82</div>
+          <div class="overall-value">86</div>
           <div class="overall-label">Total Tasks</div>
         </div>
         <div class="stat-divider"></div>
         <div class="overall-stat">
-          <div class="overall-value">74</div>
+          <div class="overall-value">78</div>
           <div class="overall-label">Succeeded</div>
         </div>
         <div class="stat-divider"></div>
         <div class="overall-stat">
-          <div class="overall-value">90%</div>
+          <div class="overall-value">91%</div>
           <div class="overall-label">Success Rate</div>
         </div>
       </div>
@@ -914,6 +1068,45 @@ body{
           <div class="exp-tasks">
             <span class="tasks-label">Reports:</span>
             <div class="tasks-list"><a href="report_default_20t_2r_chatdrug_001.html" class="task-link">chatdrug_001</a> <a href="report_default_20t_2r_chatdrug_002.html" class="task-link">chatdrug_002</a> <a href="report_default_20t_2r_chatdrug_003.html" class="task-link">chatdrug_003</a> <a href="report_default_20t_2r_chatdrug_004.html" class="task-link">chatdrug_004</a> <a href="report_default_20t_2r_chatdrug_005.html" class="task-link">chatdrug_005</a> <a href="report_default_20t_2r_chatdrug_006.html" class="task-link">chatdrug_006</a> <a href="report_default_20t_2r_chatdrug_007.html" class="task-link">chatdrug_007</a> <a href="report_default_20t_2r_chatdrug_008.html" class="task-link">chatdrug_008</a> <a href="report_default_20t_2r_chatdrug_009.html" class="task-link">chatdrug_009</a> <a href="report_default_20t_2r_chatdrug_010.html" class="task-link">chatdrug_010</a> <a href="report_default_20t_2r_chatdrug_011.html" class="task-link">chatdrug_011</a> <a href="report_default_20t_2r_chatdrug_012.html" class="task-link">chatdrug_012</a> <a href="report_default_20t_2r_chatdrug_013.html" class="task-link">chatdrug_013</a> <a href="report_default_20t_2r_chatdrug_014.html" class="task-link">chatdrug_014</a> <a href="report_default_20t_2r_chatdrug_015.html" class="task-link">chatdrug_015</a> <a href="report_default_20t_2r_chatdrug_016.html" class="task-link">chatdrug_016</a> <a href="report_default_20t_2r_chatdrug_017.html" class="task-link">chatdrug_017</a> <a href="report_default_20t_2r_chatdrug_018.html" class="task-link">chatdrug_018</a> <a href="report_default_20t_2r_chatdrug_019.html" class="task-link">chatdrug_019</a> <a href="report_default_20t_2r_chatdrug_020.html" class="task-link">chatdrug_020</a></div>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <div class="exp-header">
+            <h3>default_fixed_critic_10t_2r</h3>
+            <span class="domain-pill">Drug Discovery</span>
+          </div>
+          <p class="exp-desc">Default config with fixed critic prompt (PROCEED-by-default). Partial run: 4/10 tasks before vLLM server disconnected.</p>
+          <div class="exp-stats">
+            <div class="stat" title="Number of optimization tasks that completed successfully out of total tasks">
+              <div class="stat-value" style="color:var(--green)">4/4</div>
+              <div class="stat-label">Success Rate</div>
+              <div class="stat-detail">100%</div>
+            </div>
+            <div class="stat" title="Total number of optimization tasks in this experiment">
+              <div class="stat-value">4</div>
+              <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat" title="Average change in LogP (lipophilicity) across tasks">
+              <div class="stat-value">-1.44</div>
+              <div class="stat-label">Avg LogP Delta</div>
+            </div>
+            <div class="stat" title="Average change in QED (drug-likeness) across tasks">
+              <div class="stat-value">+0.026</div>
+              <div class="stat-label">Avg QED Delta</div>
+            </div>
+            <div class="stat" title="Fraction of proposed molecules that were chemically valid">
+              <div class="stat-value">N/A</div>
+              <div class="stat-label">Validity Rate</div>
+            </div>
+            <div class="stat" title="Total wall-clock time for the experiment to complete">
+              <div class="stat-value">19m</div>
+              <div class="stat-label">Runtime</div>
+            </div>
+          </div>
+          <div class="exp-tasks">
+            <span class="tasks-label">Reports:</span>
+            <div class="tasks-list"><span class="no-reports">No reports generated yet</span></div>
           </div>
         </div>
 
