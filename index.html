@@ -3,214 +3,257 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RAILS — Project Hub</title>
+<title>Catalyst Lab Reports</title>
 <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f8f9fa; color: #1a1a2e; line-height: 1.6; padding: 2rem; max-width: 900px; margin: 0 auto; }
-    h1 { font-size: 1.8rem; margin-bottom: 0.3rem; color: #16213e; }
-    .subtitle { color: #666; font-size: 0.95rem; margin-bottom: 2rem; }
-    .summary { background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .summary h2 { font-size: 1.1rem; color: #16213e; margin-bottom: 0.8rem; }
-    .summary p { font-size: 0.9rem; color: #555; margin-bottom: 1rem; }
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
-    .stat { background: #f0f4ff; border-radius: 8px; padding: 0.8rem; text-align: center; }
-    .stat-value { font-size: 1.5rem; font-weight: 700; color: #2563eb; }
-    .stat-label { font-size: 0.75rem; color: #666; margin-top: 0.2rem; }
-    .stat-green .stat-value { color: #16a34a; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#2563EB;--green:#16A34A;--amber:#D97706;--purple:#7C3AED;--red:#DC2626;
+  --bg:#F0F2F5;--card:#FFFFFF;--border:#E2E8F0;--text:#1E293B;--text-muted:#64748B;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;
+  max-width:960px;margin:0 auto;padding:32px 20px 80px}
 
-    h2.section-title { font-size: 1.1rem; color: #16213e; margin-bottom: 1rem; }
+/* Header */
+.page-header{
+  background:radial-gradient(ellipse at 30% 50%,#334155 0%,#1E293B 70%);
+  color:#fff;padding:48px 44px;border-radius:20px;margin-bottom:12px;text-align:center;
+  position:relative;overflow:hidden
+}
+.page-header::before{
+  content:"";position:absolute;top:-50%;right:-20%;width:400px;height:400px;
+  background:radial-gradient(circle,rgba(99,102,241,0.15) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none
+}
+.page-header h1{font-size:2.2rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:6px;position:relative}
+.page-header p{opacity:0.7;font-size:0.95rem;position:relative}
 
-    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.2rem; margin-bottom: 2rem; }
-    .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); text-decoration: none; color: inherit; transition: box-shadow 0.2s, transform 0.2s; display: flex; flex-direction: column; }
-    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); transform: translateY(-2px); }
-    .card-icon { font-size: 2rem; margin-bottom: 0.8rem; }
-    .card h3 { font-size: 1.05rem; color: #16213e; margin-bottom: 0.4rem; }
-    .card p { font-size: 0.85rem; color: #666; flex: 1; }
-    .card-stats { display: flex; gap: 0.6rem; margin-top: 0.8rem; flex-wrap: wrap; }
-    .card-badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
-    .badge-blue { background: #e0e7ff; color: #3730a3; }
-    .badge-green { background: #dcfce7; color: #166534; }
-    .badge-amber { background: #fef3c7; color: #92400e; }
-    .badge-purple { background: #f3e8ff; color: #6b21a8; }
+/* Intro text */
+.intro{text-align:center;color:var(--text-muted);font-size:0.88rem;margin-bottom:28px;
+  max-width:680px;margin-left:auto;margin-right:auto;line-height:1.7}
 
-    .pipeline { background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .pipeline h2 { font-size: 1.1rem; color: #16213e; margin-bottom: 0.8rem; }
-    .pipeline-stages { display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem; font-size: 0.85rem; }
-    .pipeline-stage { background: #f0f4ff; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 500; color: #2563eb; }
-    .pipeline-arrow { color: #94a3b8; font-weight: 700; }
-    .pipeline-desc { font-size: 0.82rem; color: #666; margin-top: 0.8rem; }
+/* Overall stats banner */
+.overall-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+  margin-bottom:32px;
+}
+.overall-stat{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:20px 16px;text-align:center;
+  box-shadow:0 1px 4px rgba(0,0,0,0.03)
+}
+.overall-value{font-size:1.8rem;font-weight:800;color:var(--blue)}
+.overall-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;
+  color:var(--text-muted);margin-top:4px;font-weight:600}
 
-    .verifier-section { background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .verifier-section h2 { font-size: 1.1rem; color: #16213e; margin-bottom: 0.8rem; }
-    .verifier-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.8rem; }
-    .verifier { padding: 0.8rem; background: #f9fafb; border-radius: 8px; border-left: 3px solid #3b82f6; }
-    .verifier h4 { font-size: 0.88rem; color: #16213e; margin-bottom: 0.2rem; }
-    .verifier p { font-size: 0.8rem; color: #666; }
-    .verifier.nsfr { border-left-color: #8b5cf6; }
-    .verifier.asp { border-left-color: #f59e0b; }
+/* Section title */
+.section-title{
+  font-size:1rem;font-weight:700;color:var(--text);margin-bottom:16px;
+  padding-left:4px;display:flex;align-items:center;gap:8px
+}
+.section-title::before{
+  content:"";display:inline-block;width:4px;height:18px;background:var(--blue);
+  border-radius:2px
+}
 
-    .footer { text-align: center; color: #94a3b8; font-size: 0.8rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; }
+/* Experiment cards */
+.exp-card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:28px 32px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);
+  transition:box-shadow 0.2s,transform 0.2s
+}
+.exp-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.09);transform:translateY(-1px)}
+.exp-header{display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+.exp-header h2{font-size:1.3rem;font-weight:700}
+.domain-pill{background:#EEF2FF;color:var(--blue);padding:3px 14px;border-radius:14px;
+  font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+.exp-desc{color:var(--text-muted);font-size:0.9rem;margin-bottom:16px}
+
+/* Stats row */
+.exp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{text-align:center;padding:12px 8px;background:#F8FAFC;border-radius:10px;
+  cursor:help;transition:background 0.15s}
+.stat:hover{background:#EEF2FF}
+.stat-value{font-size:1.25rem;font-weight:700;color:var(--text)}
+.stat-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;
+  color:var(--text-muted);margin-top:2px;font-weight:600}
+.stat-detail{font-size:0.72rem;color:var(--text-muted);margin-top:2px}
+
+/* Task links */
+.exp-tasks{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tasks-label{font-size:0.8rem;font-weight:600;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:0.04em}
+.task-link{
+  display:inline-block;padding:6px 16px;background:var(--blue);color:#fff;
+  border-radius:8px;font-size:0.82rem;font-weight:600;text-decoration:none;
+  transition:background 0.15s,transform 0.1s
+}
+.task-link:hover{background:#1D4ED8;transform:translateY(-1px)}
+.no-reports{color:var(--text-muted);font-size:0.85rem;font-style:italic}
+
+/* Empty state */
+.empty-state{text-align:center;padding:60px 20px}
+.empty-icon{margin-bottom:16px}
+.empty-state p{color:var(--text-muted);font-size:1.05rem;font-weight:600}
+.empty-hint{color:var(--text-muted);font-size:0.88rem;font-weight:400;margin-top:6px}
+
+/* Glossary */
+.glossary{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:20px 28px;margin-top:32px;margin-bottom:20px
+}
+.glossary summary{
+  font-size:0.88rem;font-weight:700;color:var(--text);cursor:pointer;
+  list-style:none;display:flex;align-items:center;gap:8px
+}
+.glossary summary::before{content:"\25B6";font-size:0.6rem;transition:transform 0.2s}
+.glossary[open] summary::before{transform:rotate(90deg)}
+.glossary-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;
+  margin-top:14px;font-size:0.84rem;color:var(--text-muted)
+}
+.glossary-item dt{font-weight:700;color:var(--text);margin-bottom:2px}
+.glossary-item dd{margin:0;line-height:1.5}
+
+/* Footer */
+.page-footer{text-align:center;color:var(--text-muted);font-size:0.8rem;
+  padding:24px 0;border-top:1px solid var(--border);margin-top:48px}
+.page-footer a{color:var(--blue);text-decoration:none}
+
+/* Responsive */
+@media(max-width:640px){
+  .overall-stats{grid-template-columns:repeat(2,1fr)}
+  .exp-stats{grid-template-columns:repeat(2,1fr)}
+  .exp-card{padding:20px 18px}
+  .glossary-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
+<header class="page-header">
+  <h1>Catalyst Lab Reports</h1>
+  <p>Multi-Agent Scientific Optimization &mdash; Experiment Dashboard</p>
+</header>
 
-<h1>RAILS &mdash; Project Hub</h1>
-<p class="subtitle">Reasoning with Automatically Integrated Logical Supervision &middot; Multi-domain symbolic verification</p>
+<p class="intro">
+  Catalyst uses multiple AI agents (a project lead, medicinal chemist, critic,
+  computational chemist, and ADMET specialist) to collaboratively optimize molecules.
+  Each report below shows the full agent conversation, property evaluations, and optimization decisions.
+</p>
 
-<div class="summary">
-    <h2>Safety Dataset Overview</h2>
-    <p>The RAILS safety dataset contains reasoning traces where every intermediate step has been symbolically verified. Generated by a teacher model (DeepSeek) and validated by domain-appropriate solvers, these traces are used for SFT warmup before GRPO training.</p>
-    <div class="stats">
-        <div class="stat stat-green"><div class="stat-value">6,033</div><div class="stat-label">Total Verified Examples</div></div>
-        <div class="stat"><div class="stat-value">1,808</div><div class="stat-label">Propositional Logic</div></div>
-        <div class="stat"><div class="stat-value">2,597</div><div class="stat-label">First-Order Logic</div></div>
-        <div class="stat"><div class="stat-value">1,628</div><div class="stat-label">Non-Monotonic Logic</div></div>
-        <div class="stat"><div class="stat-value">25</div><div class="stat-label">Theories Covered</div></div>
-        <div class="stat stat-green"><div class="stat-value">3</div><div class="stat-label">Verification Backends</div></div>
+
+    <div class="overall-stats">
+      <div class="overall-stat">
+        <div class="overall-value">2</div>
+        <div class="overall-label">Experiments</div>
+      </div>
+      <div class="overall-stat">
+        <div class="overall-value">22</div>
+        <div class="overall-label">Total Tasks</div>
+      </div>
+      <div class="overall-stat">
+        <div class="overall-value">20</div>
+        <div class="overall-label">Succeeded</div>
+      </div>
+      <div class="overall-stat">
+        <div class="overall-value">91%</div>
+        <div class="overall-label">Success Rate</div>
+      </div>
     </div>
-</div>
 
-<!-- Evaluation Results Cards -->
-<h2 class="section-title">Evaluation Results</h2>
-
-<div class="card-grid">
-    <a class="card" href="eval_results.html">
-        <div class="card-icon">&#x1F4CA;</div>
-        <h3>Performance Comparison</h3>
-        <p>Accuracy across 5 benchmarks (LogicBench, FOLIO, ProntoQA, ProofWriter, ACPBench) for all models and training conditions. Includes detailed consistency, faithfulness, and format metrics.</p>
-        <div class="card-stats">
-            <span class="card-badge badge-green">5 benchmarks</span>
-            <span class="card-badge badge-blue">5 models</span>
-            <span class="card-badge badge-purple">4 conditions</span>
-        </div>
-    </a>
-
-    <a class="card" href="transfer_eval.html">
-        <div class="card-icon">&#x2696;</div>
-        <h3>Transfer Evaluation: SARA &amp; LSAT</h3>
-        <p>Zero-shot transfer to legal reasoning (SARA) and constraint satisfaction (LSAT Logic Games). GRPO models show 3&ndash;12x improvement over base models on out-of-domain tasks, demonstrating that logic-verified training generalizes.</p>
-        <div class="card-stats">
-            <span class="card-badge badge-green">2 benchmarks</span>
-            <span class="card-badge badge-blue">6 models</span>
-            <span class="card-badge badge-amber">zero-shot transfer</span>
-        </div>
-    </a>
-
-    <a class="card" href="qualitative_comparison.html">
-        <div class="card-icon">&#x1F50D;</div>
-        <h3>Qualitative Analysis</h3>
-        <p>Side-by-side comparison of reasoning traces from base vs RAILS-trained models on the same questions. Shows how proof-continuity reward changes intermediate reasoning steps.</p>
-        <div class="card-stats">
-            <span class="card-badge badge-green">16 examples</span>
-            <span class="card-badge badge-blue">4 theories</span>
-            <span class="card-badge badge-amber">base vs SAT</span>
-        </div>
-    </a>
-
-    <a class="card" href="training_dynamics.html">
-        <div class="card-icon">&#x1F4C8;</div>
-        <h3>Training Dynamics</h3>
-        <p>Interactive learning curves for SFT warmup and GRPO reinforcement learning. Reward signals, consistency improvement, KL divergence, and quality metrics across all models.</p>
-        <div class="card-stats">
-            <span class="card-badge badge-green">14 GRPO runs</span>
-            <span class="card-badge badge-blue">4 SFT runs</span>
-            <span class="card-badge badge-purple">interactive charts</span>
-        </div>
-    </a>
-
-    <a class="card" href="research_notes.html">
-        <div class="card-icon">&#x1F4DD;</div>
-        <h3>Research Notes</h3>
-        <p>Key findings and analyses: think-template divergence (DeepSeek vs Qwen), NLI vs SAT verification comparison, and connections to science &amp; law domains.</p>
-        <div class="card-stats">
-            <span class="card-badge badge-green">3 notes</span>
-            <span class="card-badge badge-amber">key findings</span>
-            <span class="card-badge badge-purple">paper framing</span>
-        </div>
-    </a>
-</div>
-
-<!-- SFT Showcases -->
-<h2 class="section-title">Safety Dataset Showcases</h2>
-
-<div class="card-grid">
-    <a class="card" href="sft_examples_propositional.html">
-        <div class="card-icon">&#x1F4D0;</div>
-        <h3>Propositional Logic</h3>
-        <p>Classical propositional reasoning: modus ponens, modus tollens, disjunctive syllogism, hypothetical syllogism, constructive/destructive dilemma, material implication, commutation, and bidirectional dilemma.</p>
-        <div class="card-stats">
-            <span class="card-badge badge-green">1,808 examples</span>
-            <span class="card-badge badge-blue">8 theories</span>
-            <span class="card-badge badge-purple">SAT verified</span>
-        </div>
-    </a>
-
-    <a class="card" href="sft_examples_fol.html">
-        <div class="card-icon">&#x2200;</div>
-        <h3>First-Order Logic</h3>
-        <p>Quantified reasoning with predicates and variables: all 9 FOL inference types including modus ponens/tollens, dilemmas (constructive, destructive, bidirectional), syllogisms, universal and existential instantiation.</p>
-        <div class="card-stats">
-            <span class="card-badge badge-green">2,597 examples</span>
-            <span class="card-badge badge-blue">9 theories</span>
-            <span class="card-badge badge-purple">ASP verified</span>
-        </div>
-    </a>
-
-    <a class="card" href="sft_examples_nm.html">
-        <div class="card-icon">&#x21AF;</div>
-        <h3>Non-Monotonic Logic</h3>
-        <p>Default reasoning, exceptions, and priority-based conflict resolution. Verified by Answer Set Programming (Clingo) using stable model semantics.</p>
-        <div class="card-stats">
-            <span class="card-badge badge-green">1,628 examples</span>
-            <span class="card-badge badge-blue">8 theories</span>
-            <span class="card-badge badge-purple">ASP verified</span>
-        </div>
-    </a>
-</div>
-
-<div class="verifier-section">
-    <h2>Verification Backends</h2>
-    <div class="verifier-grid">
-        <div class="verifier">
-            <h4>SAT Solver</h4>
-            <p>Propositional logic. Tests unsatisfiability of premises &cup; &not;conclusion. Binary entailment check via MiniSAT.</p>
-        </div>
-        <div class="verifier asp">
-            <h4>ASP (Answer Set Programming)</h4>
-            <p>First-order and non-monotonic logic. Cautious reasoning over stable models via Clingo. Handles disjunctions, classical negation, negation-as-failure, exceptions, and priorities.</p>
-        </div>
-        <div class="verifier nsfr">
-            <h4>NSFR (Neural-Symbolic Forward Reasoner)</h4>
-            <p>First-order logic (supplementary). Forward chaining over Prolog-style rules and facts. Checks entailment via symbolic T<sub>P</sub> operator.</p>
-        </div>
+<details class="glossary">
+  <summary>What do the metrics mean?</summary>
+  <dl class="glossary-grid">
+    <div class="glossary-item">
+      <dt>Success Rate</dt>
+      <dd>How many optimization tasks completed with an improved molecule
+          vs. total tasks attempted.</dd>
     </div>
-</div>
-
-<div class="pipeline">
-    <h2>Generation Pipeline</h2>
-    <div class="pipeline-stages">
-        <span class="pipeline-stage">Teacher LLM</span>
-        <span class="pipeline-arrow">&rarr;</span>
-        <span class="pipeline-stage">Parse &lt;step&gt; tags</span>
-        <span class="pipeline-arrow">&rarr;</span>
-        <span class="pipeline-stage">Format check</span>
-        <span class="pipeline-arrow">&rarr;</span>
-        <span class="pipeline-stage">Symbolic verification</span>
-        <span class="pipeline-arrow">&rarr;</span>
-        <span class="pipeline-stage">Structural filters</span>
-        <span class="pipeline-arrow">&rarr;</span>
-        <span class="pipeline-stage">Answer match</span>
-        <span class="pipeline-arrow">&rarr;</span>
-        <span class="pipeline-stage">Safety dataset</span>
+    <div class="glossary-item">
+      <dt>LogP Change</dt>
+      <dd>Average change in lipophilicity (fat-solubility). Negative = more
+          water-soluble; positive = more fat-soluble. Drug-like range: &minus;0.4 to 5.6.</dd>
     </div>
-    <p class="pipeline-desc">Each generated trace passes through multi-gate validation. The consistency gate dispatches to the domain-appropriate solver: SAT for propositional, ASP/Clingo for first-order and non-monotonic logic. Traces failing any blocking gate are re-generated (up to 3 retries). The same solvers are reused during GRPO training as reward functions.</p>
-</div>
+    <div class="glossary-item">
+      <dt>Total Tasks</dt>
+      <dd>Number of separate molecule-optimization tasks run in the experiment.
+          Each task starts from a different molecule.</dd>
+    </div>
+    <div class="glossary-item">
+      <dt>Runtime</dt>
+      <dd>Total wall-clock time for all tasks in the experiment to complete,
+          including agent discussion and property evaluation.</dd>
+    </div>
+  </dl>
+</details>
 
-<div class="footer">
-    Updated February 20, 2026 &middot;
-    RAILS (Reasoning with Automatically Integrated Logical Supervision) &middot;
-    ProofContinuity
-</div>
+<div class="section-title">Experiments</div>
 
+
+        <div class="exp-card">
+          <div class="exp-header">
+            <h2>live_vllm_test</h2>
+            <span class="domain-pill">Drug Discovery</span>
+          </div>
+          <p class="exp-desc">No description available</p>
+          <div class="exp-stats">
+            <div class="stat" title="Number of optimization tasks that completed successfully out of total tasks">
+              <div class="stat-value" style="color:var(--green)">2/2</div>
+              <div class="stat-label">Success Rate</div>
+              <div class="stat-detail">100%</div>
+            </div>
+            <div class="stat" title="Total number of optimization tasks in this experiment">
+              <div class="stat-value">2</div>
+              <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat" title="Average change in LogP (lipophilicity) across tasks. Negative means molecules became more water-soluble, positive means more fat-soluble.">
+              <div class="stat-value">-0.30</div>
+              <div class="stat-label">Avg LogP Change</div>
+            </div>
+            <div class="stat" title="Total wall-clock time for the experiment to complete">
+              <div class="stat-value">5m</div>
+              <div class="stat-label">Runtime</div>
+            </div>
+          </div>
+          <div class="exp-tasks">
+            <span class="tasks-label">View Reports:</span>
+            <div class="tasks-list"><a href="report_live_vllm_test_chatdrug_001.html" class="task-link">chatdrug_001</a> <a href="report_live_vllm_test_chatdrug_002.html" class="task-link">chatdrug_002</a></div>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <div class="exp-header">
+            <h2>single_agent_20t_2r</h2>
+            <span class="domain-pill">Drug Discovery</span>
+          </div>
+          <p class="exp-desc">Ablation study: single agent (only Medicinal Chemist + Computational Chemist, no discussion)</p>
+          <div class="exp-stats">
+            <div class="stat" title="Number of optimization tasks that completed successfully out of total tasks">
+              <div class="stat-value" style="color:var(--green)">18/20</div>
+              <div class="stat-label">Success Rate</div>
+              <div class="stat-detail">90%</div>
+            </div>
+            <div class="stat" title="Total number of optimization tasks in this experiment">
+              <div class="stat-value">20</div>
+              <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat" title="Average change in LogP (lipophilicity) across tasks. Negative means molecules became more water-soluble, positive means more fat-soluble.">
+              <div class="stat-value">-1.39</div>
+              <div class="stat-label">Avg LogP Change</div>
+            </div>
+            <div class="stat" title="Total wall-clock time for the experiment to complete">
+              <div class="stat-value">57m</div>
+              <div class="stat-label">Runtime</div>
+            </div>
+          </div>
+          <div class="exp-tasks">
+            <span class="tasks-label">View Reports:</span>
+            <div class="tasks-list"><span class="no-reports">No reports generated yet</span></div>
+          </div>
+        </div>
+
+<footer class="page-footer">
+  Generated by <strong>Catalyst</strong> &mdash; Multi-Agent Scientific Optimization Framework
+</footer>
 </body>
 </html>
