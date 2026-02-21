@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalyst Ablation Comparison Report</title>
+<style>
+/* === Base === */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#2563EB;--green:#16A34A;--amber:#D97706;--purple:#7C3AED;--red:#DC2626;
+  --bg:#F8FAFC;--card:#FFFFFF;--border:#E2E8F0;--text:#1E293B;--text-muted:#64748B;
+  --radius:12px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;
+  max-width:1200px;margin:0 auto;padding:24px 20px 60px}
+h2{font-size:1.35rem;font-weight:700;margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+h3{font-size:1.05rem;font-weight:600;margin:0 0 8px;color:var(--text-muted)}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+.section-desc{color:var(--text-muted);font-size:0.88rem;margin-bottom:16px;line-height:1.5}
+
+/* === Header === */
+.report-header{background:linear-gradient(135deg,#0F172A 0%,#1E293B 50%,#334155 100%);color:#fff;
+  padding:36px 40px;border-radius:20px;margin-bottom:28px;position:relative;overflow:hidden}
+.report-header::before{content:"";position:absolute;top:-50%;right:-20%;width:60%;height:200%;
+  background:radial-gradient(ellipse,rgba(37,99,235,0.15) 0%,transparent 70%);pointer-events:none}
+.header-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;position:relative}
+.header-title{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.report-header h1{font-size:1.8rem;font-weight:800;letter-spacing:-0.03em}
+.domain-badge{background:rgba(255,255,255,0.12);padding:5px 16px;border-radius:20px;
+  font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;
+  border:1px solid rgba(255,255,255,0.1)}
+.header-meta{display:flex;gap:24px;margin-top:16px;font-size:0.88rem;flex-wrap:wrap;position:relative}
+.meta-item{display:flex;align-items:center;gap:6px}
+.meta-label{opacity:0.5;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em}
+
+/* === Cards === */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:28px;margin-bottom:28px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+
+/* === Tables === */
+.table-wrapper{overflow-x:auto;border-radius:8px;border:1px solid var(--border)}
+table{border-collapse:collapse;width:100%;font-size:0.88em}
+th,td{padding:10px 14px;text-align:left;border:1px solid var(--border)}
+th{background:#1E293B;color:#fff;font-size:0.75rem;text-transform:uppercase;
+  letter-spacing:0.05em;white-space:nowrap}
+.metric-name-col{font-weight:600;white-space:nowrap;background:#F8FAFC;min-width:180px}
+.metric-val{text-align:center;font-family:"SF Mono",SFMono-Regular,Menlo,monospace;font-size:0.85em}
+.metric-best{background:#F0FDF4;color:#166534;font-weight:700}
+.task-id-cell{font-family:"SF Mono",SFMono-Regular,Menlo,monospace;font-size:0.82em;white-space:nowrap}
+
+/* === Badges === */
+.badge-success{background:#DCFCE7;color:#166534;padding:3px 10px;border-radius:10px;
+  font-size:0.72rem;font-weight:700}
+.badge-fail{background:#FEE2E2;color:#991B1B;padding:3px 10px;border-radius:10px;
+  font-size:0.72rem;font-weight:700}
+.badge-sig{background:#FEF3C7;color:#92400E;padding:3px 10px;border-radius:10px;
+  font-size:0.72rem;font-weight:700}
+.badge-nosig{background:#F1F5F9;color:#64748B;padding:3px 10px;border-radius:10px;
+  font-size:0.72rem;font-weight:700}
+
+/* === Sub-header in per-task table === */
+.sub-header{display:flex;gap:12px;font-size:0.65rem;text-transform:uppercase;
+  letter-spacing:0.04em;margin-top:4px;opacity:0.7}
+.sub-header span{flex:1;text-align:center}
+
+/* === Charts === */
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:16px}
+.chart-box{background:#FAFBFC;border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.chart-box h3{text-align:center;margin-bottom:12px}
+
+/* === Per-task table === */
+.per-task-table td{vertical-align:middle;white-space:nowrap}
+
+/* === Significance table === */
+.sig-table td,.sig-table th{text-align:center}
+
+/* === Footer === */
+.report-footer{text-align:center;color:var(--text-muted);font-size:0.8rem;
+  padding:24px 0;border-top:1px solid var(--border);margin-top:40px}
+
+/* === Print === */
+@media print{
+  body{max-width:none;padding:0;background:#fff}
+  .report-header{background:#1E293B !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .report-header::before{display:none}
+  .card{break-inside:avoid}
+}
+
+/* === Responsive === */
+@media (max-width:640px){
+  .report-header{padding:24px 20px;border-radius:12px}
+  .report-header h1{font-size:1.4rem}
+  .header-meta{flex-direction:column;gap:8px}
+  .chart-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header class="report-header"><div class="header-top"><div class="header-title"><h1>Catalyst Ablation Comparison</h1><span class="domain-badge">Drug Discovery</span></div></div><div class="header-meta"><span class="meta-item"><span class="meta-label">Experiments</span> single_agent_20t_2r, no_critic_20t_2r, no_admet_20t_2r</span><span class="meta-item"><span class="meta-label">Count</span> 3 configs</span></div></header>
+<main>
+<section class="card"><h2>Metric Comparison</h2><p class="section-desc">Side-by-side comparison of aggregate metrics across experiment configurations. Best values are highlighted in green.</p><div class="table-wrapper"><table class="metrics-table"><thead><tr><th class="metric-name-col">Metric</th><th>single_agent_20t_2r</th><th>no_critic_20t_2r</th><th>no_admet_20t_2r</th></tr></thead><tbody><tr><td class="metric-name-col">Total Tasks</td><td class="metric-val">20</td><td class="metric-val">20</td><td class="metric-val">20</td></tr>
+<tr><td class="metric-name-col">Success Rate</td><td class="metric-val metric-best">90.0%</td><td class="metric-val">90.0%</td><td class="metric-val">90.0%</td></tr>
+<tr><td class="metric-name-col">Validity Rate</td><td class="metric-val metric-best">88.9%</td><td class="metric-val">85.8%</td><td class="metric-val">87.2%</td></tr>
+<tr><td class="metric-name-col">Avg Similarity</td><td class="metric-val metric-best">0.0000</td><td class="metric-val">0.0000</td><td class="metric-val">0.0000</td></tr>
+<tr><td class="metric-name-col">Avg Rounds Used</td><td class="metric-val metric-best">1.9000</td><td class="metric-val">1.9000</td><td class="metric-val">1.9000</td></tr>
+<tr><td class="metric-name-col">Avg Delta HBA</td><td class="metric-val">1.1053</td><td class="metric-val">1.3158</td><td class="metric-val">1.4211</td></tr>
+<tr><td class="metric-name-col">Avg Delta HBD</td><td class="metric-val">0.7368</td><td class="metric-val">0.9474</td><td class="metric-val">0.5263</td></tr>
+<tr><td class="metric-name-col">Avg Delta LogP</td><td class="metric-val">-1.3947</td><td class="metric-val metric-best">-1.6142</td><td class="metric-val">-1.5047</td></tr>
+<tr><td class="metric-name-col">Avg Delta MW</td><td class="metric-val metric-best">-16.7684</td><td class="metric-val">-14.2521</td><td class="metric-val">-15.9116</td></tr>
+<tr><td class="metric-name-col">Avg Delta QED</td><td class="metric-val">0.0298</td><td class="metric-val">0.0418</td><td class="metric-val metric-best">0.0420</td></tr>
+<tr><td class="metric-name-col">Avg Delta tPSA</td><td class="metric-val">23.5800</td><td class="metric-val">27.3089</td><td class="metric-val">22.6705</td></tr></tbody></table></div></section>
+<section class="card"><h2>Visual Comparison</h2><p class="section-desc">Bar charts comparing key metrics across experiment configurations.</p><div class="chart-grid"><div class="chart-box"><h3>Success Rate</h3><canvas id="successChart"></canvas></div><div class="chart-box"><h3>Validity Rate</h3><canvas id="validityChart"></canvas></div><div class="chart-box"><h3>Avg Delta LogP</h3><canvas id="logpChart"></canvas></div><div class="chart-box"><h3>Avg Delta QED</h3><canvas id="qedChart"></canvas></div></div><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script><script>function makeBarChart(id, label, labels, data, bgColors, borderColors, yMin, yMax) {  new Chart(document.getElementById(id), {    type: "bar",    data: {      labels: labels,      datasets: [{        label: label,        data: data,        backgroundColor: bgColors,        borderColor: borderColors,        borderWidth: 2,        borderRadius: 6,      }]    },    options: {      responsive: true,      plugins: { legend: { display: false } },      scales: {        y: {          beginAtZero: yMin === undefined,          min: yMin,          max: yMax,          ticks: { font: { size: 11 } }        },        x: { ticks: { font: { size: 10 }, maxRotation: 45 } }      }    }  });}var labels = ["single_agent_20t_2r", "no_critic_20t_2r", "no_admet_20t_2r"];var bgColors = ["#2563EBCC", "#16A34ACC", "#D97706CC"];var borderColors = ["#2563EB", "#16A34A", "#D97706"];makeBarChart("successChart", "Success Rate", labels, [0.9, 0.9, 0.9], bgColors, borderColors, 0, 1);makeBarChart("validityChart", "Validity Rate", labels, [0.8888888888888888, 0.8582677165354331, 0.872093023255814], bgColors, borderColors, 0, 1);makeBarChart("logpChart", "Avg Delta LogP", labels, [-1.394736842105263, -1.614210526315789, -1.504736842105263], bgColors, borderColors, undefined, undefined);makeBarChart("qedChart", "Avg Delta QED", labels, [0.02977894736842105, 0.04181052631578947, 0.04200526315789475], bgColors, borderColors, undefined, undefined);</script></section>
+<section class="card"><h2>Per-Task Comparison</h2><p class="section-desc">Task-level results across configurations. Shows whether each experiment succeeded on each task and the LogP delta achieved.</p><div class="table-wrapper"><table class="per-task-table"><thead><tr><th>Task ID</th><th colspan="2">single_agent_20t_2r<div class="sub-header"><span>Status</span><span>Delta LogP</span></div></th><th colspan="2">no_critic_20t_2r<div class="sub-header"><span>Status</span><span>Delta LogP</span></div></th><th colspan="2">no_admet_20t_2r<div class="sub-header"><span>Status</span><span>Delta LogP</span></div></th></tr></thead><tbody><tr><td class="task-id-cell">chatdrug_001</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.92</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-2.99</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.83</td></tr>
+<tr><td class="task-id-cell">chatdrug_002</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.32</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.92</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.05</td></tr>
+<tr><td class="task-id-cell">chatdrug_003</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.56</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-2.37</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.35</td></tr>
+<tr><td class="task-id-cell">chatdrug_004</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.26</td><td class="metric-val"><span class="badge-fail">Fail</span></td><td class="metric-val">0.00</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.65</td></tr>
+<tr><td class="task-id-cell">chatdrug_005</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.08</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-0.45</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.21</td></tr>
+<tr><td class="task-id-cell">chatdrug_006</td><td class="metric-val"><span class="badge-fail">Fail</span></td><td class="metric-val">0.00</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.53</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-0.60</td></tr>
+<tr><td class="task-id-cell">chatdrug_007</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.20</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-0.66</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.87</td></tr>
+<tr><td class="task-id-cell">chatdrug_008</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.28</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-0.98</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-0.30</td></tr>
+<tr><td class="task-id-cell">chatdrug_009</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.53</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-2.36</td><td class="metric-val"><span class="badge-fail">Fail</span></td><td class="metric-val">0.00</td></tr>
+<tr><td class="task-id-cell">chatdrug_010</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.63</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.46</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.46</td></tr>
+<tr><td class="task-id-cell">chatdrug_011</td><td class="metric-val"><span class="badge-fail">Fail</span></td><td class="metric-val">0.00</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-3.17</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-2.98</td></tr>
+<tr><td class="task-id-cell">chatdrug_012</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-0.95</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.60</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.46</td></tr>
+<tr><td class="task-id-cell">chatdrug_013</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.98</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-0.95</td><td class="metric-val"><span class="badge-fail">Fail</span></td><td class="metric-val">0.00</td></tr>
+<tr><td class="task-id-cell">chatdrug_014</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-2.05</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.97</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.97</td></tr>
+<tr><td class="task-id-cell">chatdrug_015</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-0.87</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-0.87</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.49</td></tr>
+<tr><td class="task-id-cell">chatdrug_016</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-2.20</td><td class="metric-val"><span class="badge-fail">Fail</span></td><td class="metric-val">0.00</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.78</td></tr>
+<tr><td class="task-id-cell">chatdrug_017</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-0.60</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.21</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.24</td></tr>
+<tr><td class="task-id-cell">chatdrug_018</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-0.93</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.07</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.50</td></tr>
+<tr><td class="task-id-cell">chatdrug_019</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.49</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.49</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.49</td></tr>
+<tr><td class="task-id-cell">chatdrug_020</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.70</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-1.70</td><td class="metric-val"><span class="badge-success">Pass</span></td><td class="metric-val">-2.01</td></tr></tbody></table></div></section>
+<section class="card"><h2>Statistical Significance</h2><p class="section-desc">Pairwise comparison of success rates across configurations. Differences greater than 5% are flagged as potentially significant.</p><div class="table-wrapper"><table class="sig-table"><thead><tr><th>Experiment A</th><th>Experiment B</th><th>Success Rate A</th><th>Success Rate B</th><th>Difference</th><th>Significance</th></tr></thead><tbody><tr><td>single_agent_20t_2r</td><td>no_critic_20t_2r</td><td>90.0%</td><td>90.0%</td><td>0.0%</td><td><span class="badge-nosig">Not significant</span></td></tr>
+<tr><td>single_agent_20t_2r</td><td>no_admet_20t_2r</td><td>90.0%</td><td>90.0%</td><td>0.0%</td><td><span class="badge-nosig">Not significant</span></td></tr>
+<tr><td>no_critic_20t_2r</td><td>no_admet_20t_2r</td><td>90.0%</td><td>90.0%</td><td>0.0%</td><td><span class="badge-nosig">Not significant</span></td></tr></tbody></table></div></section>
+</main>
+<footer class="report-footer">
+  Generated by <strong>Catalyst</strong> &mdash; Multi-Agent Scientific Optimization Framework
+</footer>
+</body>
+</html>

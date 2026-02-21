@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalyst - Highlighted Results</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#2563EB;--green:#16A34A;--amber:#D97706;--purple:#7C3AED;--red:#DC2626;
+  --bg:#F0F2F5;--card:#FFFFFF;--border:#E2E8F0;--text:#1E293B;--text-muted:#64748B;
+  --radius:14px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;
+  max-width:1060px;margin:0 auto;padding:32px 20px 80px}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:#F1F5F9;padding:2px 6px;border-radius:4px;font-size:0.8em;word-break:break-all;
+  font-family:"SF Mono",SFMono-Regular,Menlo,monospace}
+
+/* Header */
+header{
+  background:linear-gradient(135deg,#0F172A 0%,#1E293B 50%,#334155 100%);
+  color:#fff;padding:48px 44px;border-radius:20px;margin-bottom:32px;text-align:center;
+  position:relative;overflow:hidden
+}
+header::before{
+  content:"";position:absolute;top:-40%;right:-15%;width:50%;height:200%;
+  background:radial-gradient(ellipse,rgba(37,99,235,0.15) 0%,transparent 70%);pointer-events:none
+}
+header::after{
+  content:"";position:absolute;bottom:-30%;left:-10%;width:40%;height:150%;
+  background:radial-gradient(ellipse,rgba(22,163,74,0.1) 0%,transparent 70%);pointer-events:none
+}
+header h1{font-size:2.2rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:8px;position:relative}
+header p{opacity:0.7;font-size:0.95rem;position:relative;max-width:600px;margin:0 auto}
+.back-link{
+  position:absolute;top:20px;right:24px;color:rgba(255,255,255,0.7);font-size:0.85rem;
+  padding:6px 16px;border-radius:8px;background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.1);transition:all 0.15s;text-decoration:none;z-index:1
+}
+.back-link:hover{background:rgba(255,255,255,0.15);color:#fff;text-decoration:none}
+
+/* Section headers */
+.section-title{
+  font-size:1.15rem;font-weight:700;color:var(--text);margin:36px 0 16px;
+  padding-left:4px;display:flex;align-items:center;gap:10px
+}
+.section-title::before{
+  content:"";display:inline-block;width:4px;height:22px;border-radius:2px
+}
+.section-title.logp::before{background:var(--blue)}
+.section-title.qed::before{background:var(--green)}
+.section-title.ablation::before{background:var(--purple)}
+.section-subtitle{color:var(--text-muted);font-size:0.88rem;margin:-10px 0 20px 18px;line-height:1.5}
+
+/* Highlight Cards */
+.highlight-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:28px 32px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);
+  transition:box-shadow 0.2s,transform 0.15s;position:relative
+}
+.highlight-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.09);transform:translateY(-1px)}
+.card-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.card-title{font-size:1.1rem;font-weight:700}
+.config-badge{
+  padding:4px 14px;border-radius:14px;font-size:0.72rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.05em
+}
+.config-single{background:#DBEAFE;color:#1D4ED8}
+.config-nocritic{background:#FEF3C7;color:#92400E}
+.config-noadmet{background:#FCE7F3;color:#9D174D}
+.badge-succeeded{background:#DCFCE7;color:#166534;padding:4px 14px;border-radius:14px;
+  font-size:0.72rem;font-weight:700}
+.badge-failed{background:#FEE2E2;color:#991B1B;padding:4px 14px;border-radius:14px;
+  font-size:0.72rem;font-weight:700}
+
+/* Molecule comparison row */
+.mol-row{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:start;
+  margin:16px 0;padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)
+}
+.mol-box{text-align:center}
+.mol-label{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;
+  color:var(--text-muted);margin-bottom:6px}
+.mol-label-best{color:var(--green)}
+.smiles-box{
+  font-family:"SF Mono",monospace;font-size:0.72rem;color:var(--text-muted);
+  word-break:break-all;padding:8px 12px;background:#F8FAFC;border-radius:8px;
+  border:1px solid var(--border);max-width:380px;margin:0 auto
+}
+.arrow-col{display:flex;align-items:center;padding-top:20px}
+.arrow-col svg{width:36px;height:36px}
+
+/* Property delta grid */
+.delta-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:16px 0
+}
+.delta-item{
+  text-align:center;padding:12px 8px;background:#F8FAFC;border-radius:10px;
+  border:1px solid var(--border)
+}
+.delta-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;
+  color:var(--text-muted);font-weight:600;margin-bottom:2px}
+.delta-val{font-size:1.15rem;font-weight:700}
+.delta-change{font-size:0.78rem;font-weight:600;margin-top:1px}
+.good{color:var(--green)}
+.bad{color:var(--red)}
+.neutral{color:var(--text-muted)}
+
+/* Commentary */
+.commentary{
+  background:#F0F9FF;border-left:4px solid var(--blue);padding:12px 18px;
+  border-radius:0 8px 8px 0;font-size:0.88rem;color:#1E40AF;margin-top:16px;line-height:1.6
+}
+.commentary strong{font-weight:700}
+.report-link{
+  display:inline-block;margin-top:12px;padding:6px 18px;background:var(--blue);
+  color:#fff;border-radius:8px;font-size:0.82rem;font-weight:600;text-decoration:none;
+  transition:background 0.15s
+}
+.report-link:hover{background:#1D4ED8;text-decoration:none}
+
+/* Comparison table */
+.compare-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:0.85rem}
+.compare-table th{
+  background:#1E293B;color:#fff;padding:10px 14px;text-align:left;
+  font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em
+}
+.compare-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.compare-table tr:hover{background:#F8FAFC}
+.compare-table .row-best{background:#F0FDF4}
+.compare-table .row-failed{background:#FEF2F2;color:var(--text-muted)}
+.compare-table .smiles-cell{
+  font-family:"SF Mono",monospace;font-size:0.72rem;max-width:200px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+
+/* Overall stats */
+.stats-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px
+}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.03)
+}
+.stat-card .stat-value{font-size:1.5rem;font-weight:800;color:var(--blue)}
+.stat-card .stat-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;
+  color:var(--text-muted);margin-top:4px;font-weight:600}
+
+/* Footer */
+footer{text-align:center;color:var(--text-muted);font-size:0.8rem;
+  padding:24px 0;border-top:1px solid var(--border);margin-top:48px}
+
+/* Responsive */
+@media(max-width:640px){
+  header{padding:28px 20px}
+  header h1{font-size:1.6rem}
+  .highlight-card{padding:20px 18px}
+  .mol-row{grid-template-columns:1fr;text-align:center}
+  .arrow-col{justify-content:center;padding:0}
+  .arrow-col svg{transform:rotate(90deg)}
+  .delta-grid{grid-template-columns:repeat(2,1fr)}
+  .stats-row{grid-template-columns:1fr}
+  .compare-table{font-size:0.78rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="back-link">All Reports</a>
+  <h1>Catalyst - Highlighted Results</h1>
+  <p>Best qualitative examples from ablation experiments across 60 drug optimization tasks with three agent configurations</p>
+</header>
+
+<!-- Overview Stats -->
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-value">60</div>
+    <div class="stat-label">Total Tasks Analyzed</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">54/60</div>
+    <div class="stat-label">Successful Optimizations (90%)</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">-3.17</div>
+    <div class="stat-label">Best LogP Reduction</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 1: Best LogP Reductions -->
+<!-- ============================================================ -->
+
+<div class="section-title logp">Top LogP Reductions</div>
+<p class="section-subtitle">
+  LogP measures lipophilicity (fat-solubility). Lower LogP generally means better oral absorption.
+  These tasks achieved the largest reductions in LogP while maintaining molecular validity.
+</p>
+
+<!-- Highlight 1: Best overall LogP reduction -->
+<div class="highlight-card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Best Overall: -3.17 LogP Reduction</div>
+      <span style="font-size:0.82rem;color:var(--text-muted)">chatdrug_011 / no_critic_20t_2r</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span class="config-badge config-nocritic">No Critic</span>
+      <span class="badge-succeeded">Succeeded</span>
+    </div>
+  </div>
+
+  <div class="mol-row">
+    <div class="mol-box">
+      <div class="mol-label">Starting Molecule</div>
+      <div class="smiles-box">CCN1CCN(c2ccc(Nc3ncc4c5ccncc5n(C5CCCC5)c4n3)c(F)c2)CC1</div>
+    </div>
+    <div class="arrow-col">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><path d="M5 12h14m-4-4l4 4-4 4"/></svg>
+    </div>
+    <div class="mol-box">
+      <div class="mol-label mol-label-best">Best Molecule</div>
+      <div class="smiles-box">OCCN1CCN(c2ccc(Nc3ncc4c5ccncc5n(N2CCOCC2)c4n3)c(F)c2)CC1</div>
+    </div>
+  </div>
+
+  <div class="delta-grid">
+    <div class="delta-item">
+      <div class="delta-label">LogP</div>
+      <div class="delta-val">1.95</div>
+      <div class="delta-change good">-3.17</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">QED</div>
+      <div class="delta-val">0.57</div>
+      <div class="delta-change good">+0.12</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">MW (Da)</div>
+      <div class="delta-val">492.6</div>
+      <div class="delta-change neutral">+33.0</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">tPSA</div>
+      <div class="delta-val">94.8</div>
+      <div class="delta-change neutral">+32.7</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">HBD</div>
+      <div class="delta-val">2</div>
+      <div class="delta-change neutral">+1</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">HBA</div>
+      <div class="delta-val">9</div>
+      <div class="delta-change neutral">+3</div>
+    </div>
+  </div>
+
+  <div class="commentary">
+    <strong>Why this is notable:</strong> The agents replaced the hydrophobic cyclopentyl group with a morpholine ring (CCOCC) and added a hydroxyl group, dramatically reducing LogP from 5.12 to 1.95 -- a 3.17-unit improvement. QED also improved by 0.12, indicating better overall drug-likeness. Achieved in 2 rounds without a Critic agent, suggesting the medicinal chemist alone recognized the polar substitution strategy.
+  </div>
+  <a href="report_no_critic_20t_2r_chatdrug_011.html" class="report-link">View Full Report</a>
+</div>
+
+<!-- Highlight 2: Single agent doing well -->
+<div class="highlight-card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Dual Improvement: LogP -1.98, QED +0.13</div>
+      <span style="font-size:0.82rem;color:var(--text-muted)">chatdrug_013 / single_agent_20t_2r</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span class="config-badge config-single">Single Agent</span>
+      <span class="badge-succeeded">Succeeded</span>
+    </div>
+  </div>
+
+  <div class="mol-row">
+    <div class="mol-box">
+      <div class="mol-label">Starting Molecule</div>
+      <div class="smiles-box">CCOC(=O)N1CCC(=C2c3ccc(Cl)cc3CCc3ncccc32)CC1</div>
+    </div>
+    <div class="arrow-col">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><path d="M5 12h14m-4-4l4 4-4 4"/></svg>
+    </div>
+    <div class="mol-box">
+      <div class="mol-label mol-label-best">Best Molecule</div>
+      <div class="smiles-box">OCCOC(=O)N1CCC(=C2c3ccc(O)cc3CCc3ncccc32)CC1</div>
+    </div>
+  </div>
+
+  <div class="delta-grid">
+    <div class="delta-item">
+      <div class="delta-label">LogP</div>
+      <div class="delta-val">2.91</div>
+      <div class="delta-change good">-1.98</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">QED</div>
+      <div class="delta-val">0.84</div>
+      <div class="delta-change good">+0.13</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">MW (Da)</div>
+      <div class="delta-val">380.4</div>
+      <div class="delta-change good">-2.5</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">tPSA</div>
+      <div class="delta-val">82.9</div>
+      <div class="delta-change neutral">+40.5</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">HBD</div>
+      <div class="delta-val">2</div>
+      <div class="delta-change neutral">+2</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">HBA</div>
+      <div class="delta-val">5</div>
+      <div class="delta-change neutral">+2</div>
+    </div>
+  </div>
+
+  <div class="commentary">
+    <strong>Why this is notable:</strong> Even the simplified single-agent configuration achieved a strong dual improvement: LogP dropped by nearly 2 units while QED rose to 0.84 (well into the drug-like range). The key modification was replacing a chlorine atom with a hydroxyl group and adding a hydroxyl to the ester linker -- classic medicinal chemistry moves that enhance water solubility without disrupting the core pharmacophore.
+  </div>
+  <a href="report_single_agent_20t_2r_chatdrug_013.html" class="report-link">View Full Report</a>
+</div>
+
+<!-- Highlight 3: Halogen-to-pyridine swap -->
+<div class="highlight-card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Halogen-to-Pyridine Swap: LogP -2.01, QED +0.07</div>
+      <span style="font-size:0.82rem;color:var(--text-muted)">chatdrug_020 / no_admet_20t_2r</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span class="config-badge config-noadmet">No ADMET</span>
+      <span class="badge-succeeded">Succeeded</span>
+    </div>
+  </div>
+
+  <div class="mol-row">
+    <div class="mol-box">
+      <div class="mol-label">Starting Molecule</div>
+      <div class="smiles-box">O=C(CCCN1CCC(O)(c2ccc(Cl)cc2)CC1)c1ccc(F)cc1</div>
+    </div>
+    <div class="arrow-col">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><path d="M5 12h14m-4-4l4 4-4 4"/></svg>
+    </div>
+    <div class="mol-box">
+      <div class="mol-label mol-label-best">Best Molecule</div>
+      <div class="smiles-box">O=C(CCCN1CCC(O)(c2ncccc2)CC1)c1ccncc1</div>
+    </div>
+  </div>
+
+  <div class="delta-grid">
+    <div class="delta-item">
+      <div class="delta-label">LogP</div>
+      <div class="delta-val">2.42</div>
+      <div class="delta-change good">-2.01</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">QED</div>
+      <div class="delta-val">0.83</div>
+      <div class="delta-change good">+0.07</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">MW (Da)</div>
+      <div class="delta-val">325.4</div>
+      <div class="delta-change good">-50.5</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">tPSA</div>
+      <div class="delta-val">66.3</div>
+      <div class="delta-change neutral">+25.8</div>
+    </div>
+  </div>
+
+  <div class="commentary">
+    <strong>Why this is notable:</strong> Both halogenated phenyl rings (chlorophenyl and fluorophenyl) were replaced with pyridine rings -- a textbook bioisosteric replacement that reduces lipophilicity while maintaining shape. The molecule also lost 50 Da of molecular weight, pushing it further into Lipinski-compliant territory. QED improved to 0.83, near the top of the drug-like range.
+  </div>
+  <a href="report_no_admet_20t_2r_chatdrug_020.html" class="report-link">View Full Report</a>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: Best QED Improvements -->
+<!-- ============================================================ -->
+
+<div class="section-title qed">Top QED Improvements</div>
+<p class="section-subtitle">
+  QED (Quantitative Estimate of Drug-likeness) is a composite score from 0 to 1 combining molecular weight,
+  LogP, HBD, HBA, tPSA, rotatable bonds, and aromatic rings. Higher is better. Most approved drugs score above 0.3.
+</p>
+
+<!-- Highlight 4: Best QED improvement -->
+<div class="highlight-card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Best QED Jump: 0.45 to 0.71 (+0.26)</div>
+      <span style="font-size:0.82rem;color:var(--text-muted)">chatdrug_005 / no_critic_20t_2r</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span class="config-badge config-nocritic">No Critic</span>
+      <span class="badge-succeeded">Succeeded</span>
+    </div>
+  </div>
+
+  <div class="mol-row">
+    <div class="mol-box">
+      <div class="mol-label">Starting Molecule</div>
+      <div class="smiles-box">CCC(=C(c1ccccc1)c1ccccc1)c1ccc(OCCN(C)C)cc1</div>
+    </div>
+    <div class="arrow-col">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><path d="M5 12h14m-4-4l4 4-4 4"/></svg>
+    </div>
+    <div class="mol-box">
+      <div class="mol-label mol-label-best">Best Molecule</div>
+      <div class="smiles-box">CCC(=C(c1ccccc1)c1ccccc1)c1ccc(OCCN1CCNCC1)cc1</div>
+    </div>
+  </div>
+
+  <div class="delta-grid">
+    <div class="delta-item">
+      <div class="delta-label">QED</div>
+      <div class="delta-val good" style="font-size:1.4rem">0.71</div>
+      <div class="delta-change good">+0.26</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">LogP</div>
+      <div class="delta-val">5.55</div>
+      <div class="delta-change good">-0.45</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">MW (Da)</div>
+      <div class="delta-val">412.6</div>
+      <div class="delta-change neutral">+41.1</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">HBD</div>
+      <div class="delta-val">1</div>
+      <div class="delta-change neutral">+1</div>
+    </div>
+  </div>
+
+  <div class="commentary">
+    <strong>Why this is notable:</strong> The dimethylamino group was replaced with a piperazine ring, adding a hydrogen bond donor and acceptor that dramatically improved overall drug-likeness. QED jumped from the borderline region (0.45) well into drug-like territory (0.71). Despite the modest LogP reduction (-0.45), the composite QED score shows this was a highly effective single structural modification.
+  </div>
+  <a href="report_no_critic_20t_2r_chatdrug_005.html" class="report-link">View Full Report</a>
+</div>
+
+<!-- Highlight 5: Large QED + LogP improvement combined -->
+<div class="highlight-card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Dimethylamine-to-Morpholine: QED +0.23, LogP -1.07</div>
+      <span style="font-size:0.82rem;color:var(--text-muted)">chatdrug_018 / no_critic_20t_2r</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span class="config-badge config-nocritic">No Critic</span>
+      <span class="badge-succeeded">Succeeded</span>
+    </div>
+  </div>
+
+  <div class="mol-row">
+    <div class="mol-box">
+      <div class="mol-label">Starting Molecule</div>
+      <div class="smiles-box">COc1cc(N(C)CCN(C)C)c(NC(=O)/C=C/CN(C)C)cc1Nc1nccc(-c2cn(C)c3ccccc23)n1</div>
+    </div>
+    <div class="arrow-col">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><path d="M5 12h14m-4-4l4 4-4 4"/></svg>
+    </div>
+    <div class="mol-box">
+      <div class="mol-label mol-label-best">Best Molecule</div>
+      <div class="smiles-box">COc1cc(N1CCOCC1)c(NC(=O)/C=C/CN1CCOCC1)cc1Nc1nccc(-c2cn(C)c3ccccc23)n1</div>
+    </div>
+  </div>
+
+  <div class="delta-grid">
+    <div class="delta-item">
+      <div class="delta-label">QED</div>
+      <div class="delta-val good" style="font-size:1.4rem">0.48</div>
+      <div class="delta-change good">+0.23</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">LogP</div>
+      <div class="delta-val">3.37</div>
+      <div class="delta-change good">-1.07</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">MW (Da)</div>
+      <div class="delta-val">583.7</div>
+      <div class="delta-change neutral">+27.0</div>
+    </div>
+    <div class="delta-item">
+      <div class="delta-label">tPSA</div>
+      <div class="delta-val">106.0</div>
+      <div class="delta-change neutral">+15.2</div>
+    </div>
+  </div>
+
+  <div class="commentary">
+    <strong>Why this is notable:</strong> Starting from a molecule with exceptionally poor drug-likeness (QED 0.25), the agents systematically replaced two dimethylamine groups with morpholine rings. This cyclic ether substitution simultaneously reduced LogP by 1.07 and nearly doubled the QED score. The starting molecule had multiple freely-rotating dimethylamino chains; converting them to rigid morpholine rings reduces conformational entropy and improves predicted metabolic stability.
+  </div>
+  <a href="report_no_critic_20t_2r_chatdrug_018.html" class="report-link">View Full Report</a>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- SECTION 3: Cross-Config Ablation Comparisons -->
+<!-- ============================================================ -->
+
+<div class="section-title ablation">Ablation Comparisons: Same Molecule, Different Configurations</div>
+<p class="section-subtitle">
+  These examples show how the same starting molecule fared under three different agent configurations:
+  <strong>Single Agent</strong> (no multi-agent discussion),
+  <strong>No Critic</strong> (skip critique/revise steps), and
+  <strong>No ADMET</strong> (disable the ADMET specialist).
+  Tasks where outcomes diverged reveal the value of specific agent roles.
+</p>
+
+<!-- Ablation 1: chatdrug_011 - dramatic difference -->
+<div class="highlight-card" style="border-left:4px solid var(--purple)">
+  <div class="card-header">
+    <div>
+      <div class="card-title">chatdrug_011: Single Agent Fails, Multi-Agent Configs Succeed</div>
+      <span style="font-size:0.82rem;color:var(--text-muted)">Starting LogP: 5.12, Starting QED: 0.447</span>
+    </div>
+  </div>
+
+  <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:12px">
+    Starting SMILES: <code>CCN1CCN(c2ccc(Nc3ncc4c5ccncc5n(C5CCCC5)c4n3)c(F)c2)CC1</code>
+  </p>
+
+  <div style="overflow-x:auto">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Configuration</th>
+          <th>Outcome</th>
+          <th>Best SMILES</th>
+          <th>LogP</th>
+          <th style="white-space:nowrap">dLogP</th>
+          <th>QED</th>
+          <th style="white-space:nowrap">dQED</th>
+          <th>Rounds</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-failed">
+          <td><span class="config-badge config-single">Single Agent</span></td>
+          <td><span class="badge-failed">Failed</span></td>
+          <td class="smiles-cell" title="Same as starting">(unchanged)</td>
+          <td>5.12</td>
+          <td>0.00</td>
+          <td>0.447</td>
+          <td>0.00</td>
+          <td>1</td>
+        </tr>
+        <tr class="row-best">
+          <td><span class="config-badge config-nocritic">No Critic</span></td>
+          <td><span class="badge-succeeded">Succeeded</span></td>
+          <td class="smiles-cell" title="OCCN1CCN(c2ccc(Nc3ncc4c5ccncc5n(N2CCOCC2)c4n3)c(F)c2)CC1">OCCN1CCN(c2ccc(Nc3ncc4c5c...</td>
+          <td>1.95</td>
+          <td style="color:var(--green);font-weight:700">-3.17</td>
+          <td>0.569</td>
+          <td style="color:var(--green)">+0.12</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><span class="config-badge config-noadmet">No ADMET</span></td>
+          <td><span class="badge-succeeded">Succeeded</span></td>
+          <td class="smiles-cell" title="OCCN1CCN(c2ccc(Nc3ncc4c5ccncc5n(C2CCNCCO2)c4n3)c(F)c2)CC1">OCCN1CCN(c2ccc(Nc3ncc4c5c...</td>
+          <td>2.14</td>
+          <td style="color:var(--green);font-weight:700">-2.98</td>
+          <td>0.493</td>
+          <td style="color:var(--green)">+0.05</td>
+          <td>2</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="commentary">
+    <strong>Key insight:</strong> The single-agent configuration failed entirely on this task -- it could not produce valid SMILES proposals for this complex polycyclic scaffold. Both multi-agent configurations succeeded dramatically, with the No Critic config achieving the best LogP reduction in the entire dataset (-3.17). This suggests that multi-agent discussion helps navigate complex chemical space, even without critic feedback. The collaborative brainstorming between agents was essential for generating valid modifications.
+  </div>
+  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+    <a href="report_single_agent_20t_2r_chatdrug_011.html" class="report-link" style="background:var(--text-muted)">Single Agent Report</a>
+    <a href="report_no_critic_20t_2r_chatdrug_011.html" class="report-link">No Critic Report</a>
+    <a href="report_no_admet_20t_2r_chatdrug_011.html" class="report-link" style="background:var(--purple)">No ADMET Report</a>
+  </div>
+</div>
+
+<!-- Ablation 2: chatdrug_016 -->
+<div class="highlight-card" style="border-left:4px solid var(--purple)">
+  <div class="card-header">
+    <div>
+      <div class="card-title">chatdrug_016: No Critic Fails, Others Succeed</div>
+      <span style="font-size:0.82rem;color:var(--text-muted)">Starting LogP: 4.78, Starting QED: 0.587</span>
+    </div>
+  </div>
+
+  <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:12px">
+    Starting SMILES: <code>CCCCC1=NC2(CCCC2)C(=O)N1Cc1ccc(-c2ccccc2-c2nn[nH]n2)cc1</code>
+  </p>
+
+  <div style="overflow-x:auto">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Configuration</th>
+          <th>Outcome</th>
+          <th>Best SMILES</th>
+          <th>LogP</th>
+          <th style="white-space:nowrap">dLogP</th>
+          <th>QED</th>
+          <th style="white-space:nowrap">dQED</th>
+          <th>Rounds</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="config-badge config-single">Single Agent</span></td>
+          <td><span class="badge-succeeded">Succeeded</span></td>
+          <td class="smiles-cell" title="OCC1=NC2(CCCC2)C(=O)N1Cc1ccc(-c2ccccc2-c2nn[nH]n2)cc1">OCC1=NC2(CCCC2)C(=O)N1Cc1...</td>
+          <td>2.58</td>
+          <td style="color:var(--green);font-weight:700">-2.20</td>
+          <td>0.682</td>
+          <td style="color:var(--green)">+0.10</td>
+          <td>2</td>
+        </tr>
+        <tr class="row-failed">
+          <td><span class="config-badge config-nocritic">No Critic</span></td>
+          <td><span class="badge-failed">Failed</span></td>
+          <td class="smiles-cell" title="Same as starting">(unchanged)</td>
+          <td>4.78</td>
+          <td>0.00</td>
+          <td>0.587</td>
+          <td>0.00</td>
+          <td>1</td>
+        </tr>
+        <tr class="row-best">
+          <td><span class="config-badge config-noadmet">No ADMET</span></td>
+          <td><span class="badge-succeeded">Succeeded</span></td>
+          <td class="smiles-cell" title="CC1=NC2(CCCC2)C(=O)N1Cc1ccc(-c2ncccc2-c2nn[nH]n2)cc1">CC1=NC2(CCCC2)C(=O)N1Cc1c...</td>
+          <td>3.00</td>
+          <td style="color:var(--green)">-1.78</td>
+          <td>0.742</td>
+          <td style="color:var(--green);font-weight:700">+0.16</td>
+          <td>2</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="commentary">
+    <strong>Key insight:</strong> Here the No Critic configuration failed while the other two succeeded. The single-agent approach replaced the butyl chain with a hydroxymethyl group (LogP -2.20), while the No ADMET config swapped a phenyl ring for pyridine (best QED +0.16). This demonstrates that removing the Critic can sometimes hurt: without critique, the chemist may propose invalid structures more frequently. Different configs also found <em>different optimization strategies</em> for the same molecule.
+  </div>
+  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+    <a href="report_single_agent_20t_2r_chatdrug_016.html" class="report-link">Single Agent Report</a>
+    <a href="report_no_critic_20t_2r_chatdrug_016.html" class="report-link" style="background:var(--text-muted)">No Critic Report</a>
+    <a href="report_no_admet_20t_2r_chatdrug_016.html" class="report-link" style="background:var(--purple)">No ADMET Report</a>
+  </div>
+</div>
+
+<!-- Ablation 3: chatdrug_004 -->
+<div class="highlight-card" style="border-left:4px solid var(--purple)">
+  <div class="card-header">
+    <div>
+      <div class="card-title">chatdrug_004: No Critic Fails, ADMET Config Achieves Best Result</div>
+      <span style="font-size:0.82rem;color:var(--text-muted)">Divergent outcomes across all three configs</span>
+    </div>
+  </div>
+
+  <div style="overflow-x:auto">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Configuration</th>
+          <th>Outcome</th>
+          <th>dLogP</th>
+          <th>dQED</th>
+          <th>Rounds</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="config-badge config-single">Single Agent</span></td>
+          <td><span class="badge-succeeded">Succeeded</span></td>
+          <td style="color:var(--green)">-1.26</td>
+          <td style="color:var(--green)">+0.04</td>
+          <td>2</td>
+        </tr>
+        <tr class="row-failed">
+          <td><span class="config-badge config-nocritic">No Critic</span></td>
+          <td><span class="badge-failed">Failed</span></td>
+          <td>0.00</td>
+          <td>0.00</td>
+          <td>2</td>
+        </tr>
+        <tr class="row-best">
+          <td><span class="config-badge config-noadmet">No ADMET</span></td>
+          <td><span class="badge-succeeded">Succeeded</span></td>
+          <td style="color:var(--green);font-weight:700">-1.65</td>
+          <td style="color:var(--green)">+0.01</td>
+          <td>2</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="commentary">
+    <strong>Key insight:</strong> The No Critic configuration ran for 2 rounds but still failed to produce a valid improvement, while both other configs succeeded. The No ADMET config achieved the deepest LogP reduction (-1.65). This pattern suggests the Critic agent's ability to catch and correct invalid proposals is more valuable than the ADMET Specialist's pharmacokinetic guidance for this particular task.
+  </div>
+  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+    <a href="report_single_agent_20t_2r_chatdrug_004.html" class="report-link">Single Agent Report</a>
+    <a href="report_no_critic_20t_2r_chatdrug_004.html" class="report-link" style="background:var(--text-muted)">No Critic Report</a>
+    <a href="report_no_admet_20t_2r_chatdrug_004.html" class="report-link" style="background:var(--purple)">No ADMET Report</a>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION: Aggregate Comparison -->
+<!-- ============================================================ -->
+
+<div class="section-title ablation">Aggregate Configuration Comparison</div>
+<p class="section-subtitle">
+  Average metrics across all 20 tasks for each configuration, showing how removing agents affects optimization quality.
+</p>
+
+<div class="highlight-card">
+  <div style="overflow-x:auto">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Configuration</th>
+          <th>Description</th>
+          <th>Success Rate</th>
+          <th>Avg dLogP</th>
+          <th>Avg dQED</th>
+          <th>Validity Rate</th>
+          <th>Avg Rounds</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="config-badge config-single">Single Agent</span></td>
+          <td style="font-size:0.82rem;color:var(--text-muted)">Only Med. Chemist + Comp. Chemist, no discussion</td>
+          <td>18/20 (90%)</td>
+          <td style="color:var(--green)">-1.40</td>
+          <td style="color:var(--green)">+0.030</td>
+          <td>88.9%</td>
+          <td>1.9</td>
+        </tr>
+        <tr>
+          <td><span class="config-badge config-nocritic">No Critic</span></td>
+          <td style="font-size:0.82rem;color:var(--text-muted)">Skip critique and revise steps</td>
+          <td>18/20 (90%)</td>
+          <td style="color:var(--green);font-weight:700">-1.61</td>
+          <td style="color:var(--green);font-weight:700">+0.042</td>
+          <td>85.8%</td>
+          <td>1.9</td>
+        </tr>
+        <tr>
+          <td><span class="config-badge config-noadmet">No ADMET</span></td>
+          <td style="font-size:0.82rem;color:var(--text-muted)">Disable ADMET Specialist agent</td>
+          <td>18/20 (90%)</td>
+          <td style="color:var(--green)">-1.51</td>
+          <td style="color:var(--green);font-weight:700">+0.042</td>
+          <td>87.2%</td>
+          <td>1.9</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="commentary">
+    <strong>Summary:</strong> All three configurations achieved the same 90% success rate (18/20 tasks), but they differed in optimization depth. Surprisingly, the No Critic configuration achieved the best average LogP reduction (-1.61), though it also had the lowest validity rate (85.8%). The No ADMET configuration tied for best QED improvement (+0.042). The per-task analysis above shows these averages mask important divergences: different configurations fail on different tasks, suggesting each agent role contributes uniquely to robustness.
+  </div>
+</div>
+
+<footer>
+  Generated by <strong>Catalyst</strong> &mdash; Multi-Agent Scientific Optimization Framework
+</footer>
+</body>
+</html>
