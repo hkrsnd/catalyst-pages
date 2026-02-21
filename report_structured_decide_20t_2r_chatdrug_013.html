@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalyst Report - structured_decide_20t_2r / chatdrug_013</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* === Base === */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --blue:#2563EB;--green:#16A34A;--amber:#D97706;--purple:#7C3AED;--red:#DC2626;
+  --bg:#F8FAFC;--card:#FFFFFF;--border:#E2E8F0;--text:#1E293B;--text-muted:#64748B;
+  --radius:12px;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7;
+  max-width:1140px;margin:0 auto;padding:24px 20px 60px}
+h2{font-size:1.35rem;font-weight:700;margin:32px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+h3{font-size:1.1rem;margin:0 0 8px}
+h4{font-size:1rem;margin:16px 0 8px}
+h5{font-size:0.95rem;margin:12px 0 6px}
+code{background:#F1F5F9;padding:2px 6px;border-radius:4px;font-size:0.85em;word-break:break-all}
+pre{background:#1E293B;color:#E2E8F0;padding:16px;border-radius:8px;overflow-x:auto;font-size:0.85em;margin:12px 0}
+pre code{background:none;padding:0;color:inherit}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:0.88em}
+th,td{padding:8px 12px;text-align:left;border:1px solid var(--border)}
+th{background:#F1F5F9;font-weight:600}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+.section-desc{color:var(--text-muted);font-size:0.88rem;margin-bottom:16px;line-height:1.5}
+
+/* === Context Banner === */
+.context-banner{background:linear-gradient(135deg,#EFF6FF 0%,#F0F9FF 50%,#F5F3FF 100%);
+  border:1px solid #DBEAFE;border-radius:var(--radius);padding:16px 24px;margin-bottom:24px;
+  font-size:0.86rem;color:#475569;line-height:1.6;display:flex;align-items:flex-start;gap:12px}
+.context-banner svg{flex-shrink:0;margin-top:1px;color:var(--blue);opacity:0.7}
+.context-banner p{margin:0}
+
+/* === Header === */
+.report-header{background:linear-gradient(135deg,#0F172A 0%,#1E293B 40%,#334155 100%);color:#fff;
+  padding:44px 48px;border-radius:20px;margin-bottom:28px;position:relative;overflow:hidden}
+.report-header::before{content:"";position:absolute;top:-50%;right:-20%;width:60%;height:200%;
+  background:radial-gradient(ellipse,rgba(37,99,235,0.15) 0%,transparent 70%);pointer-events:none}
+.report-header::after{content:"";position:absolute;bottom:-40%;left:-10%;width:50%;height:160%;
+  background:radial-gradient(ellipse,rgba(22,163,74,0.08) 0%,transparent 70%);pointer-events:none}
+.header-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;position:relative}
+.header-title{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.report-header h1{font-size:1.8rem;font-weight:800;letter-spacing:-0.04em}
+.domain-badge{background:rgba(255,255,255,0.12);padding:5px 16px;border-radius:20px;
+  font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;
+  border:1px solid rgba(255,255,255,0.1)}
+.back-link{color:rgba(255,255,255,0.7);font-size:0.85rem;padding:6px 16px;border-radius:8px;
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);transition:all 0.15s}
+.back-link:hover{background:rgba(255,255,255,0.15);color:#fff;text-decoration:none}
+.header-meta{display:flex;gap:24px;margin-top:16px;font-size:0.88rem;flex-wrap:wrap;position:relative}
+.meta-item{display:flex;align-items:center;gap:6px}
+.meta-label{opacity:0.5;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em}
+.status-success{color:#4ADE80}
+.status-failure{color:#FB923C}
+
+/* === Summary Cards === */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:14px;margin-bottom:16px}
+.summary-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:22px 20px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.04);
+  transition:transform 0.2s ease,box-shadow 0.2s ease;position:relative;overflow:hidden}
+.summary-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:var(--radius) var(--radius) 0 0}
+.summary-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.12)}
+.card-icon{width:24px;height:24px;color:var(--text-muted);margin-bottom:6px}
+.card-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:4px}
+.card-value{font-size:1.5rem;font-weight:800}
+.card-value-small{font-size:0.95rem}
+.card-delta{font-size:0.85rem;margin-top:3px;font-weight:600}
+.delta-good{color:var(--green)}
+.delta-bad{color:var(--red)}
+
+/* === Glossary === */
+.glossary-details{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  margin-bottom:28px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.glossary-summary{padding:12px 20px;cursor:pointer;font-weight:600;font-size:0.9rem;
+  color:var(--blue);list-style:none;user-select:none}
+.glossary-summary::-webkit-details-marker{display:none}
+.glossary-content{padding:0 20px 16px}
+.glossary-table{font-size:0.85rem}
+.glossary-table td:first-child{width:120px;white-space:nowrap;font-size:0.82rem}
+.glossary-table td:last-child{color:var(--text-muted)}
+
+/* === Molecule Panel === */
+.molecule-panel{background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:36px;margin-bottom:28px;box-shadow:0 1px 3px rgba(0,0,0,0.04);
+  background-image:radial-gradient(circle at 10% 90%,rgba(37,99,235,0.03) 0%,transparent 50%),
+    radial-gradient(circle at 90% 10%,rgba(124,58,237,0.03) 0%,transparent 50%)}
+.molecule-compare{display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;justify-content:center}
+.molecule-box{flex:1;min-width:280px;text-align:center}
+.mol-label{font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;
+  color:var(--text-muted);margin-bottom:8px}
+.mol-label-best{color:var(--green)}
+.mol-svg{display:flex;justify-content:center;margin:8px 0}
+.mol-svg svg{max-width:100%;height:auto;border-radius:8px}
+.smiles-text{font-family:'SF Mono',SFMono-Regular,'Cascadia Code','Fira Code',Menlo,monospace;
+  font-size:0.7rem;color:var(--text-muted);word-break:break-all;max-width:380px;margin:8px auto;
+  padding:10px 14px;background:linear-gradient(135deg,#F8FAFC,#F1F5F9);border-radius:10px;
+  border:1px solid var(--border);letter-spacing:0.02em;line-height:1.5}
+.mol-arrow{display:flex;align-items:center;padding-top:80px}
+.mol-arrow svg{width:40px;height:40px}
+.molecule-same{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.same-note{color:var(--text-muted);font-style:italic;padding:40px 0}
+.prop-table{width:auto;margin:12px auto;max-width:280px;font-size:0.85rem}
+.prop-table th{text-align:center;font-size:0.78rem;background:#F8FAFC}
+.prop-table td:first-child{font-weight:600;font-size:0.82rem;cursor:help}
+.prop-table td:last-child{text-align:right;font-family:'SF Mono',monospace;font-size:0.82rem}
+
+/* === Chart === */
+.chart-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:36px;margin-bottom:28px;box-shadow:0 1px 3px rgba(0,0,0,0.04),inset 0 1px 3px rgba(0,0,0,0.02)}
+.chart-container{position:relative;max-width:900px;margin:0 auto}
+
+/* === Conversations === */
+.conversations{margin-bottom:28px}
+.agent-legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;padding:12px 16px;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--text-muted)}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.round-details{background:var(--card);border-radius:var(--radius);
+  margin-bottom:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  border:1px solid rgba(0,0,0,0.04)}
+.round-summary{padding:14px 20px;cursor:pointer;font-weight:700;font-size:1.05rem;
+  background:#F8FAFC;user-select:none;transition:background 0.15s ease;
+  list-style:none;display:flex;align-items:center;gap:10px}
+.round-summary:hover{background:#F1F5F9}
+.round-summary::before{content:"\25B6";font-size:0.65rem;color:var(--text-muted);transition:transform 0.2s}
+details[open] .round-summary::before{transform:rotate(90deg)}
+.round-summary::-webkit-details-marker{display:none}
+.msg-count{font-weight:400;color:var(--text-muted);font-size:0.82rem;
+  background:#E2E8F0;padding:2px 10px;border-radius:10px}
+.round-content{padding:20px 24px}
+
+.message{border-left:4px solid #ccc;margin-bottom:20px;padding:16px 20px;border-radius:0 var(--radius) var(--radius) 0;
+  background:#FAFBFC;box-shadow:0 1px 4px rgba(0,0,0,0.03)}
+.msg-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.agent-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:0.74rem;font-weight:800;color:#fff;flex-shrink:0;
+  letter-spacing:0.02em;box-shadow:0 2px 6px rgba(0,0,0,0.15)}
+.agent-name{font-weight:700;font-size:0.92rem}
+.step-badge{background:#E2E8F0;padding:3px 12px;border-radius:12px;font-size:0.7rem;
+  font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted)}
+.msg-body{font-size:0.92rem;line-height:1.65}
+.msg-body h2,.msg-body h3,.msg-body h4,.msg-body h5{border:none;margin-top:16px}
+.msg-body table{font-size:0.82rem}
+.msg-body ul,.msg-body ol{padding-left:20px;margin:8px 0}
+.msg-body li{margin:4px 0}
+.msg-body hr{border:none;border-top:1px solid var(--border);margin:16px 0}
+
+/* Agent backgrounds */
+.agent-lead{background:rgba(37,99,235,0.04)}
+.agent-chem{background:rgba(22,163,74,0.04)}
+.agent-critic{background:rgba(217,119,6,0.04)}
+.agent-comp{background:rgba(124,58,237,0.04)}
+.agent-admet{background:rgba(220,38,38,0.04)}
+
+/* === Evaluation Tables === */
+.evaluations{margin-bottom:28px}
+.eval-table-wrapper{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);
+  box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.eval-table{margin:0;font-size:0.82rem}
+.eval-table th{background:linear-gradient(135deg,#0F172A,#1E293B);color:#fff;font-size:0.72rem;
+  text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;padding:10px 12px;cursor:help;
+  border-color:rgba(255,255,255,0.06)}
+.eval-table td{vertical-align:middle;white-space:nowrap}
+.eval-table tbody tr:nth-child(even){background:#FAFBFC}
+.eval-table tbody tr:nth-child(odd){background:#FFFFFF}
+.smiles-cell{max-width:240px;overflow:hidden;text-overflow:ellipsis;
+  font-family:'SF Mono',monospace;font-size:0.76rem}
+.eval-start{background:#F0F9FF !important;font-weight:600}
+.eval-best{background:#F0FDF4 !important}
+.badge-valid{background:#DCFCE7;color:#166534;padding:3px 10px;border-radius:10px;font-size:0.72rem;font-weight:700}
+.badge-invalid{background:#FEE2E2;color:#991B1B;padding:3px 10px;border-radius:10px;font-size:0.72rem;font-weight:700}
+.best-marker{background:linear-gradient(135deg,#16A34A,#22C55E);color:#fff;padding:3px 10px;
+  border-radius:10px;font-size:0.65rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.04em;vertical-align:middle;margin-left:4px;display:inline-block;
+  box-shadow:0 1px 3px rgba(22,163,74,0.3)}
+.delta-small{font-size:0.7rem;color:var(--text-muted)}
+
+/* === Decisions === */
+.decisions{margin-bottom:28px}
+.decision-card{background:var(--card);border:1px solid var(--border);border-left:5px solid;
+  border-radius:0 var(--radius) var(--radius) 0;padding:20px 26px;margin-bottom:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:box-shadow 0.15s ease}
+.decision-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.08)}
+.decision-advance{background:linear-gradient(135deg,#FFFFFF 0%,#F0FDF4 100%)}
+.decision-terminate{background:linear-gradient(135deg,#FFFFFF 0%,#FFF7ED 100%)}
+.decision-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.decision-badge{color:#fff;padding:5px 14px;border-radius:12px;font-size:0.78rem;
+  font-weight:700;text-transform:uppercase;letter-spacing:0.05em;display:inline-flex;
+  align-items:center;gap:6px}
+.decision-badge svg{fill:currentColor}
+.decision-round{color:var(--text-muted);font-size:0.85rem;font-weight:600;
+  background:#F1F5F9;padding:3px 12px;border-radius:8px}
+.decision-value{font-size:0.9rem}
+.smiles-code{font-size:0.78rem;word-break:break-all;padding:4px 8px}
+
+/* === Markdown content === */
+.md-content p{margin:8px 0}
+.md-table{font-size:0.82rem;border-radius:8px;overflow:hidden}
+.md-table th{background:#F1F5F9}
+
+/* === Footer === */
+.report-footer{text-align:center;color:var(--text-muted);font-size:0.8rem;
+  padding:28px 0;border-top:1px solid var(--border);margin-top:40px}
+.footer-nav{display:flex;justify-content:center;gap:24px;margin-bottom:12px}
+.footer-nav a{color:var(--blue);font-weight:600;font-size:0.85rem;padding:6px 18px;
+  border-radius:8px;border:1px solid var(--border);transition:all 0.15s ease;
+  background:var(--card)}
+.footer-nav a:hover{background:var(--blue);color:#fff;border-color:var(--blue);text-decoration:none}
+
+/* === Print === */
+@media print{
+  body{max-width:none;padding:0;background:#fff}
+  .report-header{background:#1E293B !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .report-header::before,.report-header::after{display:none}
+  .back-link,.footer-nav,.context-banner{display:none}
+  details{display:block !important}
+  details > *{display:block !important}
+  details summary::before{display:none}
+  .round-details{break-inside:avoid;page-break-inside:avoid}
+  .message{break-inside:avoid;page-break-inside:avoid}
+  .chart-section{break-inside:avoid;page-break-inside:avoid}
+  .molecule-panel{break-inside:avoid;page-break-inside:avoid}
+  .eval-table-wrapper{break-inside:avoid;page-break-inside:avoid}
+  .summary-card:hover{transform:none;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .decision-card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+  h2{page-break-after:avoid}
+}
+
+/* === Responsive === */
+@media (max-width:640px){
+  .report-header{padding:24px 20px;border-radius:12px}
+  .report-header h1{font-size:1.4rem}
+  .summary-grid{grid-template-columns:repeat(2,1fr)}
+  .molecule-compare{flex-direction:column}
+  .molecule-panel{padding:20px;border-radius:14px}
+  .mol-arrow{padding-top:0;transform:rotate(90deg)}
+  .header-meta{flex-direction:column;gap:8px}
+  .agent-legend{flex-direction:column;gap:8px}
+  .chart-section{padding:20px}
+  .eval-table-wrapper{font-size:0.75rem}
+  .footer-nav{flex-direction:column;align-items:center;gap:10px}
+  .context-banner{flex-direction:column;gap:8px;padding:14px 18px}
+}
+</style>
+</head>
+<body>
+<header class="report-header"><div class="header-top"><div class="header-title"><h1>Catalyst Lab Report</h1><span class="domain-badge">Drug Discovery</span></div><a href="index.html" class="back-link">All Reports</a></div><div class="header-meta"><span class="meta-item"><span class="meta-label">Experiment</span> structured_decide_20t_2r</span><span class="meta-item"><span class="meta-label">Task</span> chatdrug_013</span><span class="meta-item status-success"><span class="meta-label">Status</span> Optimized</span></div></header><div class="context-banner"><svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/></svg><p>This report documents a single molecular optimization task performed by Catalyst's multi-agent system. The agents collaboratively propose, critique, and evaluate structural modifications to improve the molecule's drug-like properties.</p></div><main><section class="summary-grid"><div class="summary-card"><svg class="card-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg><div class="card-label">Outcome</div><div class="card-value">Improved</div></div><div class="summary-card"><svg class="card-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"/></svg><div class="card-label">Rounds</div><div class="card-value">2</div></div><div class="summary-card"><svg class="card-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z"/></svg><div class="card-label">Terminated</div><div class="card-value card-value-small">Max Rounds Reached</div></div><div class="summary-card" title="Lipophilicity (lower is better for drug-likeness)"><div class="card-label">LogP</div><div class="card-value">3.35</div><div class="card-delta delta-good">-1.54</div></div><div class="summary-card" title="Drug-likeness score (0-1, higher is better)"><div class="card-label">QED</div><div class="card-value">0.87</div><div class="card-delta delta-good">+0.16</div></div><div class="summary-card" title="Total molecular mass in Daltons"><div class="card-label">MW (Da)</div><div class="card-value">382.44</div><div class="card-delta ">-0.45</div></div><div class="summary-card" title="Polar surface area in square angstroms"><div class="card-label">tPSA</div><div class="card-value">62.66</div><div class="card-delta ">+20.23</div></div></section><details class="glossary-details"><summary class="glossary-summary"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" style="vertical-align:text-bottom;margin-right:6px"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/></svg>What do these metrics mean?</summary><div class="glossary-content"><table class="glossary-table"><tbody><tr><td><strong>MW (Da)</strong></td><td>Molecular Weight (MW) &mdash; total mass of the molecule in Daltons. Drugs typically need MW &lt; 500 Da for good oral absorption (Lipinski's Rule).</td></tr><tr><td><strong>LogP</strong></td><td>LogP &mdash; a measure of how fat-soluble (lipophilic) a molecule is. Higher = more greasy. Ideally &le; 5 for oral drugs. The optimization goal here is to <strong>minimize</strong> LogP.</td></tr><tr><td><strong>HBD</strong></td><td>Hydrogen Bond Donors (HBD) &mdash; groups like OH or NH that can donate hydrogen bonds. Fewer donors generally means better membrane permeability. Lipinski limit: &le; 5.</td></tr><tr><td><strong>HBA</strong></td><td>Hydrogen Bond Acceptors (HBA) &mdash; atoms like O or N that can accept hydrogen bonds. Lipinski limit: &le; 10.</td></tr><tr><td><strong>tPSA</strong></td><td>Topological Polar Surface Area (tPSA) &mdash; the surface area of polar atoms (N, O, S and attached H). Measured in &Aring;&sup2;. Low tPSA (&lt; 140) favors oral absorption.</td></tr><tr><td><strong>Rot. Bonds</strong></td><td>Rotatable Bonds &mdash; single bonds that allow free rotation, making the molecule flexible. Fewer (&le; 10) is better for oral bioavailability.</td></tr><tr><td><strong>QED</strong></td><td>Quantitative Estimate of Drug-likeness (QED) &mdash; a score from 0 to 1 combining multiple drug-likeness properties. Higher = more drug-like. Most approved drugs score &gt; 0.3.</td></tr><tr><td><strong>Lipinski Viol.</strong></td><td>Lipinski Violations &mdash; how many of Lipinski's 'Rule of Five' criteria the molecule fails (MW, LogP, HBD, HBA). Zero violations is ideal; &le; 1 is acceptable.</td></tr></tbody></table></div></details><section class="molecule-panel"><h2>Molecular Structures</h2><div class="molecule-compare"><div class="molecule-box"><div class="mol-label">Starting Molecule</div><div class="mol-svg"><canvas class="mol-canvas" data-smiles="CCOC(=O)N1CCC(=C2c3ccc(Cl)cc3CCc3ncccc32)CC1" width="350" height="250" style="max-width:100%;border-radius:8px;background:#FAFBFC;border:1px solid #E2E8F0"></canvas></div><div class="smiles-text">CCOC(=O)N1CCC(=C2c3ccc(Cl)cc3CCc3ncccc32)CC1</div><table class="prop-table"><thead><tr><th colspan="2">Starting Properties</th></tr></thead><tbody><tr><td title="Molecular Weight (MW) &amp;mdash; total mass of the molecule in Daltons. Drugs typically need MW &amp;lt; 500 Da for good oral absorption (Lipinski&#x27;s Rule).">MW (Da)</td><td>382.89</td></tr><tr><td title="LogP &amp;mdash; a measure of how fat-soluble (lipophilic) a molecule is. Higher = more greasy. Ideally &amp;le; 5 for oral drugs. The optimization goal here is to &lt;strong&gt;minimize&lt;/strong&gt; LogP.">LogP</td><td>4.89</td></tr><tr><td title="Hydrogen Bond Donors (HBD) &amp;mdash; groups like OH or NH that can donate hydrogen bonds. Fewer donors generally means better membrane permeability. Lipinski limit: &amp;le; 5.">HBD</td><td>0</td></tr><tr><td title="Hydrogen Bond Acceptors (HBA) &amp;mdash; atoms like O or N that can accept hydrogen bonds. Lipinski limit: &amp;le; 10.">HBA</td><td>3</td></tr><tr><td title="Topological Polar Surface Area (tPSA) &amp;mdash; the surface area of polar atoms (N, O, S and attached H). Measured in &amp;Aring;&amp;sup2;. Low tPSA (&amp;lt; 140) favors oral absorption.">tPSA</td><td>42.43</td></tr><tr><td title="Rotatable Bonds &amp;mdash; single bonds that allow free rotation, making the molecule flexible. Fewer (&amp;le; 10) is better for oral bioavailability.">Rot. Bonds</td><td>1</td></tr><tr><td title="Quantitative Estimate of Drug-likeness (QED) &amp;mdash; a score from 0 to 1 combining multiple drug-likeness properties. Higher = more drug-like. Most approved drugs score &amp;gt; 0.3.">QED</td><td>0.70</td></tr><tr><td title="Lipinski Violations &amp;mdash; how many of Lipinski&#x27;s &#x27;Rule of Five&#x27; criteria the molecule fails (MW, LogP, HBD, HBA). Zero violations is ideal; &amp;le; 1 is acceptable.">Lipinski Viol.</td><td>0</td></tr></tbody></table></div><div class="mol-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><path d="M5 12h14m-4-4l4 4-4 4"/></svg></div><div class="molecule-box"><div class="mol-label mol-label-best">Best Molecule</div><div class="mol-svg"><canvas class="mol-canvas" data-smiles="OCCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1" width="350" height="250" style="max-width:100%;border-radius:8px;background:#FAFBFC;border:1px solid #E2E8F0"></canvas></div><div class="smiles-text">OCCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</div><table class="prop-table"><thead><tr><th colspan="2">Best Properties</th></tr></thead><tbody><tr><td title="Molecular Weight (MW) &amp;mdash; total mass of the molecule in Daltons. Drugs typically need MW &amp;lt; 500 Da for good oral absorption (Lipinski&#x27;s Rule).">MW (Da)</td><td>382.44</td></tr><tr><td title="LogP &amp;mdash; a measure of how fat-soluble (lipophilic) a molecule is. Higher = more greasy. Ideally &amp;le; 5 for oral drugs. The optimization goal here is to &lt;strong&gt;minimize&lt;/strong&gt; LogP.">LogP</td><td>3.35</td></tr><tr><td title="Hydrogen Bond Donors (HBD) &amp;mdash; groups like OH or NH that can donate hydrogen bonds. Fewer donors generally means better membrane permeability. Lipinski limit: &amp;le; 5.">HBD</td><td>1</td></tr><tr><td title="Hydrogen Bond Acceptors (HBA) &amp;mdash; atoms like O or N that can accept hydrogen bonds. Lipinski limit: &amp;le; 10.">HBA</td><td>4</td></tr><tr><td title="Topological Polar Surface Area (tPSA) &amp;mdash; the surface area of polar atoms (N, O, S and attached H). Measured in &amp;Aring;&amp;sup2;. Low tPSA (&amp;lt; 140) favors oral absorption.">tPSA</td><td>62.66</td></tr><tr><td title="Rotatable Bonds &amp;mdash; single bonds that allow free rotation, making the molecule flexible. Fewer (&amp;le; 10) is better for oral bioavailability.">Rot. Bonds</td><td>2</td></tr><tr><td title="Quantitative Estimate of Drug-likeness (QED) &amp;mdash; a score from 0 to 1 combining multiple drug-likeness properties. Higher = more drug-like. Most approved drugs score &amp;gt; 0.3.">QED</td><td>0.87</td></tr><tr><td title="Lipinski Violations &amp;mdash; how many of Lipinski&#x27;s &#x27;Rule of Five&#x27; criteria the molecule fails (MW, LogP, HBD, HBA). Zero violations is ideal; &amp;le; 1 is acceptable.">Lipinski Viol.</td><td>0</td></tr></tbody></table></div></div></section><section class="chart-section"><h2>Property Evolution</h2><p class="section-desc">How key molecular properties changed across optimization rounds. LogP, MW and tPSA share the left axis; QED (0&ndash;1 scale) uses the right axis.</p><div class="chart-container"><canvas id="propChart"></canvas></div><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script><script>new Chart(document.getElementById("propChart"),{type:"line",data:{labels:["Start", "R1", "R2"],datasets:[{"label":"LogP","data":[4.89, 4.5, 3.35],"borderColor":"#2563EB","backgroundColor":"#2563EB20","borderWidth":3,"tension":0.3,"yAxisID":"y","pointRadius":6,"pointBackgroundColor":"#2563EB","pointBorderColor":"#fff","pointBorderWidth":2},{"label":"MW (Da)","data":[382.89, 368.86, 382.44],"borderColor":"#7C3AED","backgroundColor":"#7C3AED20","borderWidth":3,"tension":0.3,"yAxisID":"y","pointRadius":6,"pointBackgroundColor":"#7C3AED","pointBorderColor":"#fff","pointBorderWidth":2},{"label":"tPSA","data":[42.43, 42.43, 62.66],"borderColor":"#D97706","backgroundColor":"#D9770620","borderWidth":3,"tension":0.3,"yAxisID":"y","pointRadius":6,"pointBackgroundColor":"#D97706","pointBorderColor":"#fff","pointBorderWidth":2},{"label":"QED","data":[0.7049, 0.6873, 0.8653],"borderColor":"#16A34A","backgroundColor":"#16A34A20","borderWidth":3,"tension":0.3,"yAxisID":"y1","pointRadius":6,"pointBackgroundColor":"#16A34A","pointBorderColor":"#fff","pointBorderWidth":2}]},options:{responsive:true,interaction:{mode:"index",intersect:false},plugins:{legend:{position:"top",labels:{usePointStyle:true,padding:20}}},scales:{y:{type:"linear",display:true,position:"left",title:{display:true,text:"LogP / MW / tPSA",font:{weight:"bold"}}},y1:{type:"linear",display:true,position:"right",title:{display:true,text:"QED (0-1)",font:{weight:"bold"}},min:0,max:1,grid:{drawOnChartArea:false}}}}});</script></section><section class="evaluations"><h2>Candidate Evaluations</h2><p class="section-desc">Each row is a candidate molecule proposed by the agents. The starting molecule is shown for reference. Values in parentheses show the change from the starting molecule. The best candidate (selected by the Project Lead) is highlighted in green.</p><div class="eval-table-wrapper"><table class="eval-table"><thead><tr><th>Candidate</th><th>Valid</th><th title="Molecular Weight (MW) &amp;mdash; total mass of the molecule in Daltons. Drugs typically need MW &amp;lt; 500 Da for good oral absorption (Lipinski&#x27;s Rule).">MW</th><th title="LogP &amp;mdash; a measure of how fat-soluble (lipophilic) a molecule is. Higher = more greasy. Ideally &amp;le; 5 for oral drugs. The optimization goal here is to &lt;strong&gt;minimize&lt;/strong&gt; LogP.">LogP</th><th title="Hydrogen Bond Donors (HBD) &amp;mdash; groups like OH or NH that can donate hydrogen bonds. Fewer donors generally means better membrane permeability. Lipinski limit: &amp;le; 5.">HBD</th><th title="Hydrogen Bond Acceptors (HBA) &amp;mdash; atoms like O or N that can accept hydrogen bonds. Lipinski limit: &amp;le; 10.">HBA</th><th title="Topological Polar Surface Area (tPSA) &amp;mdash; the surface area of polar atoms (N, O, S and attached H). Measured in &amp;Aring;&amp;sup2;. Low tPSA (&amp;lt; 140) favors oral absorption.">tPSA</th><th title="Rotatable Bonds &amp;mdash; single bonds that allow free rotation, making the molecule flexible. Fewer (&amp;le; 10) is better for oral bioavailability.">RotB</th><th title="Quantitative Estimate of Drug-likeness (QED) &amp;mdash; a score from 0 to 1 combining multiple drug-likeness properties. Higher = more drug-like. Most approved drugs score &amp;gt; 0.3.">QED</th><th title="Lipinski Violations &amp;mdash; how many of Lipinski&#x27;s &#x27;Rule of Five&#x27; criteria the molecule fails (MW, LogP, HBD, HBA). Zero violations is ideal; &amp;le; 1 is acceptable.">Lip.V</th><th>Meets Constraints</th></tr></thead><tbody><tr class="eval-start"><td class="smiles-cell" title="CCOC(=O)N1CCC(=C2c3ccc(Cl)cc3CCc3ncccc32)CC1">Starting</td><td>&mdash;</td><td>382.89</td><td>4.89</td><td>0</td><td>3</td><td>42.43</td><td>1</td><td>0.70</td><td>0</td><td>&mdash;</td></tr><tr><td class="smiles-cell" title="CCOC(=O)N1CCC(=C2c3c(Cl)ccc(O)cc3CCc3ncccc32)CC1">CCOC(=O)N1CCC(=C2c3c(Cl)ccc(O)cc3CCc3ncc...</td><td><span class="badge-invalid">Invalid</span></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td><span class="badge-valid">Yes</span></td></tr><tr><td class="smiles-cell" title="COC(=O)N1CCC(=C2c3ccc(Cl)cc3CCc3ncccc32)CC1">COC(=O)N1CCC(=C2c3ccc(Cl)cc3CCc3ncccc32)...</td><td><span class="badge-valid">Valid</span></td><td>368.86 <span class="delta-small">(-14.03)</span></td><td>4.50 <span class="delta-small">(-0.39)</span></td><td>0</td><td>3</td><td>42.43</td><td>0</td><td>0.69 <span class="delta-small">(-0.02)</span></td><td>0</td><td><span class="badge-valid">Yes</span></td></tr><tr><td class="smiles-cell" title="CCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1">CCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)...</td><td><span class="badge-valid">Valid</span></td><td>366.44 <span class="delta-small">(-16.45)</span></td><td>4.37 <span class="delta-small">(-0.52)</span></td><td>0</td><td>3</td><td>42.43</td><td>1</td><td>0.75 <span class="delta-small">(+0.05)</span></td><td>0</td><td><span class="badge-valid">Yes</span></td></tr><tr><td class="smiles-cell" title="COC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1">COC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)C...</td><td><span class="badge-valid">Valid</span></td><td>352.41 <span class="delta-small">(-30.48)</span></td><td>3.98 <span class="delta-small">(-0.91)</span></td><td>0</td><td>3</td><td>42.43</td><td>0</td><td>0.72 <span class="delta-small">(+0.02)</span></td><td>0</td><td><span class="badge-valid">Yes</span></td></tr><tr class="eval-best"><td class="smiles-cell" title="OCCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1">OCCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32... <span class="best-marker">BEST</span></td><td><span class="badge-valid">Valid</span></td><td>382.44 <span class="delta-small">(-0.45)</span></td><td>3.35 <span class="delta-small">(-1.54)</span></td><td>1 <span class="delta-small">(+1.00)</span></td><td>4 <span class="delta-small">(+1.00)</span></td><td>62.66 <span class="delta-small">(+20.23)</span></td><td>2</td><td>0.87 <span class="delta-small">(+0.16)</span></td><td>0</td><td><span class="badge-valid">Yes</span></td></tr><tr><td class="smiles-cell" title="CCOC(=O)N1CCC(=C2c3ccc(F)c(C#N)c3CCc3ncccc32)CC1">CCOC(=O)N1CCC(=C2c3ccc(F)c(C#N)c3CCc3ncc...</td><td><span class="badge-valid">Valid</span></td><td>391.45 <span class="delta-small">(+8.56)</span></td><td>4.25 <span class="delta-small">(-0.64)</span></td><td>0</td><td>4 <span class="delta-small">(+1.00)</span></td><td>66.22 <span class="delta-small">(+23.79)</span></td><td>1</td><td>0.73 <span class="delta-small">(+0.02)</span></td><td>0</td><td><span class="badge-valid">Yes</span></td></tr></tbody></table></div></section><section class="decisions"><h2>Decisions</h2><p class="section-desc"><strong>ADVANCE</strong> means the Project Lead selected this molecule to move forward with. <strong>TERMINATE</strong> means the optimization was stopped (e.g., no further improvement possible).</p><div class="decision-card decision-advance" style="border-left-color: #16A34A"><div class="decision-header"><span class="decision-badge" style="background: #16A34A"><svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg> ADVANCE</span><span class="decision-round">Round 1</span></div><div class="decision-value"><code class="smiles-code">CCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</code></div></div><div class="decision-card decision-advance" style="border-left-color: #16A34A"><div class="decision-header"><span class="decision-badge" style="background: #16A34A"><svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg> ADVANCE</span><span class="decision-round">Round 2</span></div><div class="decision-value"><code class="smiles-code">OCCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</code></div></div></section><section class="conversations"><h2>Agent Conversations</h2><div class="agent-legend"><span class="legend-item"><span class="legend-dot" style="background:#2563EB"></span>Project Lead</span><span class="legend-item"><span class="legend-dot" style="background:#16A34A"></span>Medicinal Chemist</span><span class="legend-item"><span class="legend-dot" style="background:#D97706"></span>Critic</span><span class="legend-item"><span class="legend-dot" style="background:#7C3AED"></span>Computational Chemist</span><span class="legend-item"><span class="legend-dot" style="background:#DC2626"></span>ADMET Specialist</span></div><details class="round-details" open><summary class="round-summary">Round 1 <span class="msg-count">7 messages</span></summary><div class="round-content"><div class="message agent-lead" style="border-left-color: #2563EB"><div class="msg-header"><span class="agent-avatar" style="background: #2563EB">PL</span><span class="agent-name" style="color: #2563EB">Project Lead</span><span class="step-badge">set_priorities</span></div><div class="msg-body"><div class="md-content"><strong>Round 1 – Priorities &amp; Focus</strong>
+
+<table class="md-table"><thead><tr><th>Current status (starting / best)</th><th><strong>LogP = 4.89</strong> (the only objective to <em>minimise</em>)</th></tr></thead><tbody><tr><td>MW = 382.9 Da, HBD = 0, HBA = 3, tPSA = 42 Å², RotB = 1, QED = 0.70, 0 Lipinski violations</td><td>All other properties are already acceptable; we must not degrade them.</td></tr></tbody></table>
+
+<h4>1. Primary goal – Lower logP</h4>
+<em> <strong>Target improvement:</strong> a <strong>≥ 0.5‑unit</strong> reduction in logP in this round (i.e., aim for ≤ 4.4). With only two rounds left, each round must deliver a meaningful step toward a more polar profile.
+</em> <strong>How to achieve it:</strong>  <br>
+  - <strong>Introduce polar heteroatoms</strong> (e.g., OH, NH, carbonyl, sulfonyl) on the periphery of the scaffold.  <br>
+  - <strong>Replace the para‑chloro phenyl substituent</strong> with a less lipophilic group (e.g., fluorine, –CF₃ → –F, –Cl → –F, or a small heteroaryl).  <br>
+  - <strong>Add a hydrogen‑bond donor/acceptor</strong> (e.g., a hydroxy‑ethyl or morpholine side‑chain) while keeping the overall size modest.<br>
+
+<h4>2. Similarity constraint – ≥ 0.4 to the parent</h4>
+<em> Any proposed analogue must retain the <strong>core bicyclic‑heteroaryl‑piperidine scaffold</strong> (the fused quinoline‑pyridine system and the N‑acyl‑piperidine ring).  
+</em> Modifications should be <strong>local</strong> (substituent changes, small appendages) rather than wholesale scaffold rewrites, to stay above the 0.4 Tanimoto threshold.<br>
+
+<h4>3. Secondary “guard‑rail” properties – keep them stable</h4>
+<table class="md-table"><thead><tr><th>Property</th><th>Acceptable range (relative to current)</th><th>Rationale</th></tr></thead><tbody><tr><td><strong>Molecular weight</strong></td><td>≤ 450 Da (no &gt; 70 Da increase)</td><td>Avoid size‑driven ADME penalties.</td></tr><tr><td><strong>H‑bond donors (HBD)</strong></td><td>≤ 2 (allow introduction of 1‑2 donors)</td><td>Keeps solubility up without excessive polarity.</td></tr><tr><td><strong>H‑bond acceptors (HBA)</strong></td><td>≤ 6 (allow up to +3)</td><td>Maintains Lipinski compliance.</td></tr><tr><td><strong>tPSA</strong></td><td>≤ 80 Å² (allow modest increase)</td><td>Prevents permeability loss.</td></tr><tr><td><strong>Rotatable bonds</strong></td><td>≤ 3 (no more than +2)</td><td>Preserves conformational rigidity.</td></tr><tr><td><strong>QED</strong></td><td>≥ 0.60 (no drop &gt; 0.1)</td><td>Keeps overall drug‑likeness.</td></tr><tr><td><strong>Lipinski violations</strong></td><td>0 (do not introduce new violations)</td><td>Guarantees oral‑drug‑likeness.</td></tr></tbody></table>
+
+<h4>4. Tactical suggestions for the Chemist</h4>
+<ul><li><strong>Replace Cl with F</strong> on the phenyl ring – reduces logP by ~0.3–0.5 with minimal impact on similarity.  </li>
+<li><strong>Add a para‑hydroxy or para‑methoxy</strong> to the same phenyl (or to the fused heteroaryl) – introduces H‑bond capacity, further lowering logP.  </li>
+<li><strong>Introduce a small polar side‑chain</strong> on the piperidine nitrogen (e.g., N‑(2‑hydroxyethyl) instead of the current N‑acetyl) – adds polarity while preserving the amide carbonyl.  </li>
+<li><strong>Swap the ethoxy‑carbonyl (CCOC(=O)–) for a more polar carbamate</strong> (e.g., N‑methyl‑carbamate) – modest logP reduction, retains similarity.  </li>
+
+</ul><h4>5. Success criteria for Round 1</h4>
+<em> <strong>LogP ≤ 4.4</strong> (≥ 0.5‑unit improvement).  
+</em> <strong>Similarity ≥ 0.4</strong> (verified by the Chemist).  <br>
+* No new Lipinski violations; all secondary metrics stay within the ranges above.  </p><p>If the Chemist can propose at least one analogue meeting these criteria, we will <strong>ADVANCE</strong> the best candidate at the end of the round. If no analogue achieves a meaningful logP drop without breaking the guard‑rails, we will consider <strong>TERMINATING</strong> after Round 2.</div></div></div><div class="message agent-chem" style="border-left-color: #16A34A"><div class="msg-header"><span class="agent-avatar" style="background: #16A34A">MC</span><span class="agent-name" style="color: #16A34A">Medicinal Chemist</span><span class="step-badge">propose</span></div><div class="msg-body"><div class="md-content"><strong>PROPOSAL_1</strong>  
+<strong>SMILES:</strong> <code>COC(=O)N1CCC(=C2c3ccc(Cl)cc3CCc3ncccc32)CC1</code>  
+<strong>RATIONALE:</strong> Replaces the ethyl group of the carbamate with a methyl group (ethyl → methyl ester). This removes two carbon atoms and one hydrogen‑bond‑acceptor oxygen that is part of a relatively non‑polar ethoxy fragment, decreasing lipophilicity while keeping the carbonyl‑amide functionality (maintains H‑bond‑acceptor count). Expected to lower logP by ≈ 0.4–0.5 units with minimal impact on MW, rotatable bonds, or aromatic scaffold.<br>
+
+<hr>
+
+<strong>PROPOSAL_2</strong>  
+<strong>SMILES:</strong> <code>CCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</code>  
+<strong>RATIONALE:</strong> Substitutes the chlorine atom on the phenyl ring with fluorine. Fluorine is less lipophilic than chlorine and contributes a smaller hydrophobic surface area, giving a modest reduction in logP (≈ 0.2 units). The electronic effect is similar, so the binding‑site interactions are likely retained. No change to MW, H‑bond donors/acceptors, or rotatable bonds.<br>
+
+<hr>
+
+<strong>PROPOSAL_3</strong>  
+<strong>SMILES:</strong> <code>CCOC(=O)N1CCC(=C2c3c(Cl)ccc(O)cc3CCc3ncccc32)CC1</code>  
+<strong>RATIONALE:</strong> Introduces a phenolic hydroxyl group on the aromatic ring (para‑to‑Cl). The OH adds one H‑bond donor and an additional H‑bond acceptor, raising tPSA by ~12 Å² and markedly increasing polarity. This is expected to drop logP by &gt; 0.5 units while preserving the overall aromatic framework and only minimally increasing MW (≈ +16 Da). Rotatable bonds remain unchanged, and the molecule still obeys Lipinski’s rules.</div></div></div><div class="message agent-critic" style="border-left-color: #D97706"><div class="msg-header"><span class="agent-avatar" style="background: #D97706">CR</span><span class="agent-name" style="color: #D97706">Critic</span><span class="step-badge">critique</span></div><div class="msg-body"><div class="md-content"><strong>PROPOSAL 1 – SMILES:</strong> <code>COC(=O)N1CCC(=C2c3ccc(Cl)cc3CCc3ncccc32)CC1</code>  
+<strong>Verdict:</strong> <strong>PROCEED</strong>  
+<strong>Reason:</strong> The SMILES is syntactically correct and represents a valid methyl‑carbamate analogue of the parent. No valence or ring‑strain issues are present, and the structure contains no prohibited reactive or toxic sub‑structures. The modification (ethyl → methyl) is chemically reasonable for lowering lipophilicity.<br>
+
+<hr>
+
+<strong>PROPOSAL 2 – SMILES:</strong> <code>CCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</code>  
+<strong>Verdict:</strong> <strong>PROCEED</strong>  
+<strong>Reason:</strong> The SMILES is valid and depicts a fluorine substitution for the chlorine on the aromatic ring. The molecule is chemically plausible, with proper valences and no disallowed functional groups. The change is a standard strategy to modestly affect logP and is acceptable for computational evaluation.</div></div></div><div class="message agent-chem" style="border-left-color: #16A34A"><div class="msg-header"><span class="agent-avatar" style="background: #16A34A">MC</span><span class="agent-name" style="color: #16A34A">Medicinal Chemist</span><span class="step-badge">revise</span></div><div class="msg-body"><div class="md-content"><strong>PROPOSAL_1</strong>  
+<strong>SMILES:</strong> <code>COC(=O)N1CCC(=C2c3ccc(Cl)cc3CCc3ncccc32)CC1</code>  
+<strong>RATIONALE:</strong> Replaces the ethyl group of the carbamate with a methyl group (ethyl → methyl). This removes two carbon atoms and a small amount of hydrophobic surface, lowering lipophilicity while preserving the carbonyl‑amide hydrogen‑bond‑acceptor pattern. Expected to decrease logP by ~0.4–0.5 units with negligible impact on MW, HBD/HBA count, tPSA, or rotatable bonds.<br>
+
+<hr>
+
+<strong>PROPOSAL_2</strong>  
+<strong>SMILES:</strong> <code>CCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</code>  
+<strong>RATIONALE:</strong> Retains the ethyl carbamate but substitutes the para‑chlorine on the aromatic ring with fluorine (Cl → F). Fluorine is less lipophilic than chlorine and slightly increases polarity, leading to a modest logP reduction (~0.3–0.4 units). The change does not alter hydrogen‑bonding capacity, keeps the same MW range, and maintains the overall molecular scaffold and low rotatable‑bond count.</div></div></div><div class="message agent-comp" style="border-left-color: #7C3AED"><div class="msg-header"><span class="agent-avatar" style="background: #7C3AED">CC</span><span class="agent-name" style="color: #7C3AED">Computational Chemist</span><span class="step-badge">evaluate</span></div><div class="msg-body"><div class="md-content"><strong>Round 1 – Property‑by‑property analysis</strong>
+
+<table class="md-table"><thead><tr><th>Property</th><th>Starting molecule (baseline)</th><th><strong>Proposal 1</strong></th><th>Δ vs Start</th><th><strong>Proposal 2</strong></th><th>Δ vs Start</th></tr></thead><tbody><tr><td><strong>SMILES</strong></td><td><code>CCOC(=O)N1CCC(=C2c3ccc(Cl)cc3CCc3ncccc32)CC1</code></td><td><code>COC(=O)N1CCC(=C2c3ccc(Cl)cc3CCc3ncccc32)CC1</code></td><td>–</td><td><code>CCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</code></td><td>–</td></tr><tr><td><strong>Molecular Weight (Da)</strong></td><td>382.89</td><td>368.86</td><td><strong>‑14.03</strong></td><td>366.44</td><td><strong>‑16.45</strong></td></tr><tr><td><strong>LogP</strong></td><td>4.89</td><td>4.50</td><td><strong>‑0.39</strong></td><td>4.37</td><td><strong>‑0.52</strong></td></tr><tr><td><strong>H‑bond donors (HBD)</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td><strong>H‑bond acceptors (HBA)</strong></td><td>3</td><td>3</td><td>0</td><td>3</td><td>0</td></tr><tr><td><strong>tPSA (Å²)</strong></td><td>42.43</td><td>42.43</td><td>0</td><td>42.43</td><td>0</td></tr><tr><td><strong>Rotatable bonds</strong></td><td>1</td><td>0</td><td><strong>‑1</strong> (fewer)</td><td>1</td><td>0 (unchanged)</td></tr><tr><td><strong>QED</strong></td><td>0.7049</td><td>0.6873</td><td><strong>‑0.0176</strong> (slight drop)</td><td>0.7524</td><td><strong>+0.0475</strong> (improvement)</td></tr><tr><td><strong>Lipinski violations</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td><strong>Similarity to starting</strong></td><td>1.00</td><td>0.8214</td><td>–</td><td>0.7931</td><td>–</td></tr><tr><td><strong>Validity</strong></td><td>VALID</td><td>VALID</td><td>–</td><td>VALID</td><td>–</td></tr></tbody></table>
+
+<strong>Key observations</strong>
+
+<ul><li><strong>LogP reduction</strong> – The primary objective is to lower logP by <strong>≥ 0.5</strong> units this round.  </li>
+   </ul><em> Proposal 2 achieves a <strong>0.52‑unit</strong> drop (4.89 → 4.37), meeting the target.  <br>
+   </em> Proposal 1 only drops <strong>0.39</strong> units (4.89 → 4.50), falling short of the ≥ 0.5 goal.<br>
+
+<ul><li><strong>Molecular weight</strong> – Both proposals are lighter (‑14 Da and ‑16 Da), which is favorable for drug‑likeness and does not breach any size constraints.</li>
+
+<li><strong>Rotatable bonds</strong> – Proposal 1 removes the single rotatable bond (Δ ‑1), slightly improving conformational rigidity. Proposal 2 keeps the same count as the starting molecule, which is already acceptable (≤ 10).</li>
+
+<li><strong>QED</strong> – Proposal 2 improves the quantitative estimate of drug‑likeness (↑ 0.0475), while Proposal 1 shows a modest decline (‑0.0176). Higher QED is desirable.</li>
+
+<li><strong>Similarity</strong> – Both proposals are well above the required <strong>0.4</strong> similarity threshold (0.82 and 0.79), ensuring the core scaffold is retained.</li>
+
+<li><strong>Other physicochemical metrics</strong> – HBD, HBA, tPSA, and Lipinski violations are unchanged, satisfying the “do not degrade” rule.</li>
+
+</ul><strong>Recommendation</strong>
+
+<table class="md-table"><thead><tr><th>Proposal</th><th>Meets ≥ 0.5 logP reduction?</th><th>Improves QED?</th><th>Overall assessment</th></tr></thead><tbody><tr><td><strong>Proposal 2</strong></td><td><strong>Yes</strong> (‑0.52)</td><td><strong>Yes</strong> (+0.0475)</td><td><strong>Best choice</strong> – satisfies the primary logP goal, improves drug‑likeness, keeps all other properties within limits, and retains high structural similarity.</td></tr><tr><td>Proposal 1</td><td>No (‑0.39)</td><td>Slightly worse QED</td><td>Acceptable but sub‑optimal; does not reach the required logP improvement and lowers QED.</td></tr></tbody></table>
+
+<strong>Action for Round 1</strong>
+
+<ul><li><strong>Advance Proposal 2</strong> to the next design cycle (Round 2).  </li>
+<li>Keep Proposal 1 as a backup if additional structural tweaks are needed to further lower logP while preserving the QED gain observed in Proposal 2.  </li>
+
+</ul>Proceed with synthesis‑or‑modeling of Proposal 2 and begin exploring complementary modifications (e.g., introducing a modest polar substituent or further truncating the alkoxy chain) to push logP even lower in the remaining round.</div></div></div><div class="message agent-admet" style="border-left-color: #DC2626"><div class="msg-header"><span class="agent-avatar" style="background: #DC2626">AD</span><span class="agent-name" style="color: #DC2626">ADMET Specialist</span><span class="step-badge">admet_review</span></div><div class="msg-body"><div class="md-content"><strong>ADMET review – Round 1</strong>
+
+<table class="md-table"><thead><tr><th>Proposal</th><th>Key changes vs. parent</th><th>ADMET‑relevant observations</th><th>Verdict</th></tr></thead><tbody><tr><td><strong>Proposal 1</strong>&lt;br&gt;<code>COC(=O)N1CCC(=C2c3ccc(Cl)cc3CCc3ncccc32)CC1</code></td><td>• Methyl‑carbamate (ethyl → methyl)  &lt;br&gt;• ΔMW = ‑14 Da  &lt;br&gt;• LogP = 4.50 (‑0.39)</td><td><strong>Absorption</strong> – MW ≈ 369 Da, tPSA ≈ 42 Å², HBD = 0, HBA = 3 → well within Lipinski; logP still &gt; 4.4, so oral absorption may be modest but acceptable. &lt;br&gt;<strong>Distribution</strong> – logP 4.5 predicts moderate‑high plasma‑protein binding; no red‑flag for volume of distribution. &lt;br&gt;<strong>Metabolism</strong> – Carbamate is an ester‑type functional group that is readily hydrolysed by esterases. The methyl carbamate is <em>less sterically hindered</em> than the ethyl analogue, so the molecule is likely <strong>more susceptible to rapid hydrolysis</strong>, potentially lowering systemic exposure. No obvious CYP‑inhibiting motifs, but the increased clearance risk is the main metabolic concern. &lt;br&gt;<strong>Excretion</strong> – MW &lt; 400 Da, moderate polarity → renal elimination possible after hydrolysis; no special excretion issue. &lt;br&gt;<strong>Toxicity</strong> – No nitro, aniline, Michael‑acceptor, epoxide or other reactive alerts. Halogen (Cl) is acceptable.</td><td><strong>CAUTION</strong> – The compound is overall drug‑like, but the increased metabolic liability of the methyl carbamate (faster ester hydrolysis) and the still‑elevated logP (4.5) merit a note. It can be progressed if a rapid‑clearance risk is acceptable or if a pro‑drug/soft‑spot strategy is planned.</td></tr><tr><td><strong>Proposal 2</strong>&lt;br&gt;<code>CCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</code></td><td>• Retains ethyl‑carbamate (same steric protection)  &lt;br&gt;• Substitutes para‑Cl with F on the phenyl ring  &lt;br&gt;• ΔMW = ‑16 Da  &lt;br&gt;• LogP = 4.37 (‑0.52)</td><td><strong>Absorption</strong> – MW ≈ 366 Da, tPSA ≈ 42 Å², HBD = 0, HBA = 3 → fully compliant; logP now ≤ 4.4, a more favorable balance for oral uptake. &lt;br&gt;<strong>Distribution</strong> – Slightly lower logP reduces plasma‑protein binding relative to the parent, improving free fraction without compromising membrane permeability. &lt;br&gt;<strong>Metabolism</strong> – The ethyl carbamate is sterically bulkier than a methyl analogue, giving <strong>greater metabolic stability</strong> toward esterases. Fluorine substitution is metabolically “blocking” (reduces aromatic oxidation) and does not introduce CYP inhibition. &lt;br&gt;<strong>Excretion</strong> – Similar to proposal 1; after eventual hydrolysis the molecule remains of modest size, supporting renal clearance. &lt;br&gt;<strong>Toxicity</strong> – No structural alerts; fluorine is generally benign, and the single chlorine is removed, lowering any potential halogen‑related toxicity concerns.</td><td><strong>FAVORABLE</strong> – The molecule meets all ADMET criteria with no significant red flags. The modest logP reduction, retained metabolic stability, and clean toxicity profile make it a suitable candidate to advance to the next round.</td></tr></tbody></table>
+
+<strong>Summary</strong>
+
+<ul><li><strong>Proposal 2</strong> is the preferred path forward (FAVORABLE).  </li>
+<li><strong>Proposal 1</strong> can be kept as an alternative, but its higher metabolic clearance risk and still‑high logP warrant a <strong>CAUTION</strong> label.  </li>
+
+</ul>Proceed with synthesis/biological testing of Proposal 2, and consider additional modifications (e.g., polar substituents or hetero‑atoms) in the next round to push logP even lower if needed.</div></div></div><div class="message agent-lead" style="border-left-color: #2563EB"><div class="msg-header"><span class="agent-avatar" style="background: #2563EB">PL</span><span class="agent-name" style="color: #2563EB">Project Lead</span><span class="step-badge">decide</span></div><div class="msg-body"><div class="md-content">ADVANCE: CCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</div></div></div></div></details><details class="round-details"><summary class="round-summary">Round 2 <span class="msg-count">7 messages</span></summary><div class="round-content"><div class="message agent-lead" style="border-left-color: #2563EB"><div class="msg-header"><span class="agent-avatar" style="background: #2563EB">PL</span><span class="agent-name" style="color: #2563EB">Project Lead</span><span class="step-badge">set_priorities</span></div><div class="msg-body"><div class="md-content"><strong>Round 2 – Priorities &amp; Focus</strong>
+
+<table class="md-table"><thead><tr><th><strong>Current Situation</strong></th><th><strong>Implication for the next design cycle</strong></th></tr></thead><tbody><tr><td><strong>Starting scaffold</strong> – a bicyclic hetero‑aryl system bearing an ethyl‑carbamate on a piperidine (C‑Cl → C‑F substitution already gave the best‑so‑far molecule).</td><td>The core is chemically robust and already satisfies all “drug‑likeness” filters (0 Lipinski violations, 1 rotatable bond, MW ≈ 366 Da, QED ≈ 0.75). Any further changes must stay within the same chemotype to respect the <strong>similarity threshold ≥ 0.4</strong>.</td></tr><tr><td><strong>Objective</strong> – <strong>minimize logP</strong> (current best = 4.37).</td><td>A logP in the high‑3 to low‑4 range is still relatively lipophilic for a 366 Da molecule. A reduction of <strong>≥ 0.3–0.5 units</strong> would be a meaningful gain while still leaving room for other properties to remain acceptable.</td></tr><tr><td><strong>Other properties</strong> – HBD = 0, HBA = 3, tPSA = 42 Å², rotatable bonds = 1, MW = 366 Da, QED ≈ 0.75.</td><td>These are already optimal for the series. <strong>Do not sacrifice</strong> them for logP gains: keep HBD/HBA unchanged, avoid adding rotatable bonds, and keep MW &lt; 400 Da to stay within the Lipinski envelope.</td></tr><tr><td><strong>Similarity constraint</strong> – ≥ 0.4 to the <strong>starting molecule</strong> (Cl‑parent).</td><td>Any proposed analogue must retain the core bicyclic hetero‑aryl‑piperidine scaffold and the ethyl‑carbamate. Large scaffold changes (e.g., opening the fused ring, adding bulky side‑chains) will likely fall below the similarity cutoff.</td></tr></tbody></table>
+
+<h4><strong>Specific Priorities for This Round</strong></h4>
+
+<ul><li><strong>LogP Reduction (Primary Goal)</strong></li>
+   </ul>- <strong>Replace or modify the remaining aromatic halogen</strong> (the fluorine in the current best) with a less lipophilic substituent (e.g., hydrogen, methyl, or a small polar group such as –OH, –OMe, –NH₂).  <br>
+   - <strong>Introduce a modest polar functionality</strong> on the aromatic system that does not increase HBD/HBA count dramatically (e.g., a fluorine → –CF₃ is <em>more</em> lipophilic, so avoid; consider –F → –Cl (increase) or –F → –H (decrease) or –F → –OCH₃ (adds H‑bond acceptor but modest).  <br>
+   - <strong>Consider hetero‑atom insertion</strong> into the aromatic ring (e.g., replace one carbon with nitrogen) if it preserves the fused‑ring topology and similarity.<br>
+
+<ul><li><strong>Maintain / Slightly Improve Other Metrics (Secondary Goals)</strong></li>
+   </ul>- <strong>Molecular weight:</strong> stay ≤ 400 Da (preferably ≤ 380 Da to give headroom for polar tweaks).  <br>
+   - <strong>Hydrogen‑bond donors/acceptors:</strong> keep HBD = 0, HBA ≤ 4. Adding a single H‑bond acceptor (e.g., methoxy) is acceptable; adding donors should be avoided.  <br>
+   - <strong>tPSA:</strong> aim for ≤ 55 Å²; a modest increase (≤ 10 Å²) is tolerable if it drives logP down.  <br>
+   - <strong>Rotatable bonds:</strong> keep at 1 (the piperidine‑carbamate bond). Any new side‑chain must be rigid or directly attached to the aromatic core.  <br>
+   - <strong>QED:</strong> try to keep ≥ 0.70; drastic polarity changes could lower QED, so balance is key.<br>
+
+<ul><li><strong>Similarity Assurance</strong></li>
+   </ul>- <strong>Tanimoto similarity</strong> to the <em>starting</em> Cl‑parent should be <strong>≥ 0.4</strong>.  <br>
+   - Use <strong>fingerprint‑based</strong> similarity (e.g., Morgan radius = 2, 1024 bits) as a mental check: any change limited to a single substituent on the aromatic ring or a single hetero‑atom swap in the fused system will typically retain similarity &gt; 0.5.  <br>
+   - <strong>Avoid scaffold‑breaking modifications</strong> (e.g., opening the fused bicyclic system, swapping the piperidine for a different heterocycle, or replacing the ethyl‑carbamate).<br>
+
+<h4><strong>Action Items for the Computational Chemist</strong></h4>
+
+<ul><li><strong>Generate a focused set (≈5–8) of analogues</strong> that explore the above modifications:</li>
+  </ul>1. <strong>F → H</strong> (simple de‑halogenation).  <br>
+  2. <strong>F → OMe</strong> (adds one H‑bond acceptor, modest polarity).  <br>
+  3. <strong>F → OH</strong> (adds H‑bond donor; evaluate impact on HBD count).  <br>
+  4. <strong>F → NH₂</strong> (adds donor/acceptor; watch HBD).  <br>
+  5. <strong>F → N‑insertion</strong> in the aromatic ring (e.g., convert a phenyl carbon to pyridine).  <br>
+  6. <strong>F → CF₃</strong> (control – should increase logP, useful as a negative reference).  <br>
+  7. <strong>Add a small polar substituent on the fused ring</strong> (e.g., a carbonyl or sulfone attached to the aromatic carbon adjacent to the fluorine).  <br>
+  8. <strong>Replace the ethyl group of the carbamate with a methyl</strong> (shortening the alkyl chain may lower logP without affecting similarity much).<br>
+
+<ul><li><strong>Calculate</strong> for each analogue: logP, MW, HBD/HBA, tPSA, rotatable bonds, Lipinski violations, QED, and <strong>Tanimoto similarity</strong> to the starting Cl‑parent.</li>
+
+<li><strong>Report</strong> the values <strong>exactly</strong> (no rounding beyond two decimals) so we can assess Pareto dominance.</li>
+
+</ul><h4><strong>Success Criteria for This Round</strong></h4>
+
+<ul><li><strong>At least one analogue</strong> shows <strong>logP ≤ 4.0</strong> (≥ 0.3 reduction) <strong>and</strong> similarity ≥ 0.4, <strong>while</strong> all other properties remain equal to or better than the current best (no new violations, MW ≤ 380 Da, HBD ≤ 0, HBA ≤ 4, tPSA ≤ 55 Å², QED ≥ 0.70).</li>
+
+<li>If <strong>no analogue</strong> meets these criteria, we will need to decide whether to <strong>terminate</strong> (given this is the final round) or to accept a marginal improvement (e.g., logP ≈ 4.2) if it still represents a Pareto‑non‑dominated point.</li>
+
+</ul><strong>Bottom line:</strong> Focus on <strong>substituent‑level polarity tweaks</strong> that shave logP without breaking the core scaffold or violating the similarity threshold. The computational chemist’s next batch of evaluations will determine whether we have a viable candidate to advance.</div></div></div><div class="message agent-chem" style="border-left-color: #16A34A"><div class="msg-header"><span class="agent-avatar" style="background: #16A34A">MC</span><span class="agent-name" style="color: #16A34A">Medicinal Chemist</span><span class="step-badge">propose</span></div><div class="msg-body"><div class="md-content"><strong>PROPOSAL 1</strong>  
+<strong>SMILES:</strong> <code>COC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</code>  
+<strong>RATIONALE:</strong> The ethoxy group of the carbamate (‑OCH₂CH₃) is replaced by a methoxy (‑OCH₃). This removes two carbon atoms and one methyl‑hydrogen surface, decreasing overall lipophilicity while preserving the carbamate hydrogen‑bond‑acceptor/donor pattern. The core bicyclic hetero‑aryl system and the piperidine ring remain unchanged, so the scaffold similarity stays well above the 0.4 threshold. Expected effect: <strong>lower logP</strong> (≈ –0.4 units) with minimal impact on potency or metabolic stability.<br>
+
+<hr>
+
+<strong>PROPOSAL 2</strong>  
+<strong>SMILES:</strong> <code>OCCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</code>  
+<strong>RATIONALE:</strong> The ethoxy moiety is converted into a 2‑hydroxyethyl ether (‑OCH₂CH₂OH). Introducing a free hydroxyl adds a hydrogen‑bond donor and increases polarity dramatically, which should reduce logP further than Proposal 1. The carbamate carbonyl and the basic piperidine nitrogen are retained, maintaining the key pharmacophore. The added OH does not break the bicyclic core, so similarity remains high. Expected effect: <strong>significant logP reduction</strong> (≈ –0.7 units) and a modest increase in polar surface area (≈ +10 Å²).<br>
+
+<hr>
+
+<strong>PROPOSAL 3</strong>  
+<strong>SMILES:</strong> <code>CCOC(=O)N1CCC(=C2c3ccc(F)c(C#N)c3CCc3ncccc32)CC1</code>  
+<strong>RATIONALE:</strong> A nitrile substituent is introduced at the para position of the fluorophenyl ring (‑C≡N). The nitrile is a modestly polar, non‑basic group that raises the overall hydrogen‑bond‑acceptor count without adding rotatable bonds or significant steric bulk. This maintains the electronic environment of the aromatic system (important for binding) while providing extra polarity to lower logP. Similarity is preserved because only a single atom is swapped on the aromatic ring. Expected effect: <strong>moderate logP decrease</strong> (≈ –0.3 units) and a slight increase in TPSA (≈ +5 Å²).</div></div></div><div class="message agent-critic" style="border-left-color: #D97706"><div class="msg-header"><span class="agent-avatar" style="background: #D97706">CR</span><span class="agent-name" style="color: #D97706">Critic</span><span class="step-badge">critique</span></div><div class="msg-body"><div class="md-content"><strong>PROPOSAL 1 – SMILES:</strong> <code>COC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</code>  <br>
+
+<strong>Verdict:</strong> <strong>PROCEED</strong>  <br>
+
+<strong>Rationale</strong>  
+<ul><li>The SMILES string is syntactically correct and all atoms have permissible valences.  </li>
+<li>The modification replaces the ethoxy group of the carbamate with a methoxy group, which is a straightforward, chemically feasible change.  </li>
+<li>No forbidden or highly reactive substructures are introduced (no epoxides, Michael‑acceptors, acyl halides, etc.).  </li>
+<li>The core bicyclic hetero‑aryl system and the piperidine ring remain unchanged, so the scaffold similarity requirement (≥ 0.4) will be comfortably met.  </li>
+
+</ul>The proposal is chemically plausible, so it can move forward to computational evaluation.</div></div></div><div class="message agent-chem" style="border-left-color: #16A34A"><div class="msg-header"><span class="agent-avatar" style="background: #16A34A">MC</span><span class="agent-name" style="color: #16A34A">Medicinal Chemist</span><span class="step-badge">revise</span></div><div class="msg-body"><div class="md-content"><strong>PROPOSAL_1</strong>  
+<strong>SMILES:</strong> <code>COC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</code>  
+<strong>RATIONALE:</strong> The ethoxy group of the carbamate (‑OCH₂CH₃) is replaced by a methoxy (‑OCH₃). This removes two carbon atoms and one methyl hydrogen, decreasing overall lipophilicity while preserving the carbamate’s hydrogen‑bond‑acceptor/donor pattern. The bicyclic hetero‑aryl core and piperidine scaffold remain unchanged, so the similarity to the current best molecule stays well above the 0.4 threshold. Expected effect: modest reduction in logP (≈ ‑0.4 units) with minimal impact on potency, metabolic stability, or other drug‑likeness metrics.</div></div></div><div class="message agent-comp" style="border-left-color: #7C3AED"><div class="msg-header"><span class="agent-avatar" style="background: #7C3AED">CC</span><span class="agent-name" style="color: #7C3AED">Computational Chemist</span><span class="step-badge">evaluate</span></div><div class="msg-body"><div class="md-content"><strong>1.  Quick‑look at the optimisation goal</strong>
+
+<table class="md-table"><thead><tr><th>Goal</th><th>What we need to watch</th></tr></thead><tbody><tr><td><strong>Lower logP</strong> (the primary metric)</td><td>The lower the better, but we must stay ≥ 0.4 similarity to the original scaffold.</td></tr><tr><td><strong>Drug‑likeness</strong></td><td>No Lipinski violations, ≤ 5 H‑bond donors, ≤ 10 acceptors, TPSA ≈ 40‑80 Å², rotatable bonds ≤ 5.</td></tr><tr><td><strong>Overall “quality”</strong></td><td>QED (higher = more drug‑like) and molecular weight (preferably ≤ 400 Da).</td></tr><tr><td><strong>Similarity</strong></td><td>All proposals already pass the 0.4 cut‑off (0.62‑0.67).</td></tr></tbody></table>
+The <strong>current best</strong> (F‑substituted carbamate) has  
+<code>MW = 366.44 Da, logP = 4.37, HBD = 0, HBA = 3, TPSA = 42.43 Å², rot = 1, QED = 0.7524</code>.<br>
+
+<hr>
+
+<strong>2.  Property comparison (proposal vs. starting </strong>Cl<strong> molecule and vs. current best)</strong>  <br>
+
+<table class="md-table"><thead><tr><th>Property</th><th>Starting (Cl)</th><th>Current Best (F)</th><th><strong>Proposal 1</strong>&lt;br&gt;COC(=O)…</th><th><strong>Δ vs Start</strong></th><th><strong>Δ vs Best</strong></th><th><strong>Proposal 2</strong>&lt;br&gt;OCCOC(=O)…</th><th><strong>Δ vs Start</strong></th><th><strong>Δ vs Best</strong></th><th><strong>Proposal 3</strong>&lt;br&gt;CCOC(=O)…(CN)</th><th><strong>Δ vs Start</strong></th><th><strong>Δ vs Best</strong></th></tr></thead><tbody><tr><td><strong>MW (Da)</strong></td><td>382.89</td><td>366.44</td><td>352.41</td><td><strong>‑30.48</strong></td><td><strong>‑13.97</strong></td><td>382.44</td><td><strong>‑0.45</strong></td><td><strong>+16.00</strong></td><td>391.45</td><td><strong>+8.56</strong></td><td><strong>+25.01</strong></td></tr><tr><td><strong>logP</strong></td><td>4.89</td><td>4.37</td><td>3.98</td><td><strong>‑0.91</strong></td><td><strong>‑0.39</strong></td><td>3.35</td><td><strong>‑1.54</strong></td><td><strong>‑1.02</strong></td><td>4.25</td><td><strong>‑0.64</strong></td><td><strong>‑0.12</strong></td></tr><tr><td><strong>HBD</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td><strong>+1</strong></td><td><strong>+1</strong></td><td>0</td><td>0</td><td>0</td></tr><tr><td><strong>HBA</strong></td><td>3</td><td>3</td><td>3</td><td>0</td><td>0</td><td>4</td><td><strong>+1</strong></td><td><strong>+1</strong></td><td>4</td><td><strong>+1</strong></td><td><strong>+1</strong></td></tr><tr><td><strong>TPSA (Å²)</strong></td><td>42.43</td><td>42.43</td><td>42.43</td><td>0</td><td>0</td><td>62.66</td><td><strong>+20.23</strong></td><td><strong>+20.23</strong></td><td>66.22</td><td><strong>+23.79</strong></td><td><strong>+23.79</strong></td></tr><tr><td><strong>Rotatable bonds</strong></td><td>1</td><td>1</td><td>0</td><td><strong>‑1</strong></td><td><strong>‑1</strong></td><td>2</td><td><strong>+1</strong></td><td><strong>+1</strong></td><td>1</td><td>0</td><td>0</td></tr><tr><td><strong>QED</strong></td><td>0.7049</td><td>0.7524</td><td>0.7201</td><td><strong>+0.0152</strong></td><td><strong>‑0.0323</strong></td><td>0.8653</td><td><strong>+0.1604</strong></td><td><strong>+0.1129</strong></td><td>0.7291</td><td><strong>+0.0242</strong></td><td><strong>‑0.0233</strong></td></tr><tr><td><strong>Similarity to Starting</strong></td><td>1.00</td><td>–</td><td>0.6452</td><td>–</td><td>–</td><td>0.6667</td><td>–</td><td>–</td><td>0.6269</td><td>–</td><td>–</td></tr><tr><td><strong>Lipinski violations</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></tbody></table>
+
+<em>Δ = value – reference.</em>
+
+<hr>
+
+<strong>3.  What the numbers tell us</strong>
+<br>
+| Proposal | LogP improvement | QED gain | Size / polarity shift | Rotatable bonds | Overall “</div></div></div><div class="message agent-admet" style="border-left-color: #DC2626"><div class="msg-header"><span class="agent-avatar" style="background: #DC2626">AD</span><span class="agent-name" style="color: #DC2626">ADMET Specialist</span><span class="step-badge">admet_review</span></div><div class="msg-body"><div class="md-content"><strong>ADMET Review – Proposal 1</strong>  <br>
+SMILES: <code>COC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</code>
+
+<table class="md-table"><thead><tr><th>Property (computed)</th><th>Interpretation</th></tr></thead><tbody><tr><td><strong>MW</strong> ≈ 352 Da (≈ 14 Da lower than the current best)</td><td>Well below the 400 Da “soft” limit – no renal‑clearance penalty.</td></tr><tr><td><strong>logP</strong> ≈ 3.9–4.0 (≈ 0.4 units lower)</td><td>Still in the moderate‑to‑high range but comfortably below the “very lipophilic” zone (&gt;5). Improves solubility and reduces the risk of high‑volume distribution or off‑target binding.</td></tr><tr><td><strong>H‑bond donors / acceptors</strong>: 0 HBD / 3 HBA</td><td>Within Lipinski limits; no excess polarity that would impair passive permeability.</td></tr><tr><td><strong>TPSA</strong> ≈ 42 Å²</td><td>Ideal for oral absorption (40‑80 Å²).</td></tr><tr><td><strong>Rotatable bonds</strong>: 1</td><td>Very low flexibility – favorable for membrane permeability and metabolic stability.</td></tr><tr><td><strong>Lipinski violations</strong>: 0</td><td>Fully compliant.</td></tr><tr><td><strong>QED</strong> (estimated) ≈ 0.77</td><td>Slightly higher than the current best – indicates overall drug‑likeness is maintained.</td></tr><tr><td><strong>Structural alerts</strong></td><td>No Michael acceptors, nitro groups, anilines, epoxides, or other known toxic motifs. The only metabolic soft‑spot is the O‑methyl of the carbamate, which is a classic site for CYP‑mediated O‑dealkylation, but this is a benign pathway (produces formaldehyde, quickly detoxified).</td></tr><tr><td><strong>Metabolic liability</strong></td><td>The carbamate carbonyl is relatively stable; the O‑methyl is a modest liability but comparable to the O‑ethyl in the reference compound. No obvious CYP‑inhibition motifs (no hetero‑aromatic nitrogens that are strongly basic, no quinones, etc.).</td></tr><tr><td><strong>Distribution</strong></td><td>logP &lt; 5 and moderate TPSA give a balanced Vd; no red‑flag for high‑tissue sequestration.</td></tr><tr><td><strong>Excretion</strong></td><td>MW &lt; 400 Da and lack of ionizable groups suggest renal clearance will be adequate; no need for extensive biliary elimination.</td></tr><tr><td><strong>Toxicity</strong></td><td>No known toxicophores; the scaffold has already been shown to be “chemically robust.”</td></tr></tbody></table>
+
+<h4>Verdict</h4>
+<strong>FAVORABLE</strong>
+
+<strong>Rationale</strong> – The methoxy‑carbamate variant retains the excellent physicochemical profile of the parent scaffold while modestly lowering lipophilicity and molecular weight. All key ADMET parameters (absorption‑friendly TPSA, low rotatable bond count, no Lipinski violations, absence of structural toxicity alerts) are within acceptable ranges. The only minor concern is the O‑methyl group, a typical site for CYP‑mediated O‑dealkylation, but this is a low‑risk metabolic pathway and does not outweigh the overall benefit. The compound can be advanced to the next stage (in‑vitro ADME profiling) without restriction.</div></div></div><div class="message agent-lead" style="border-left-color: #2563EB"><div class="msg-header"><span class="agent-avatar" style="background: #2563EB">PL</span><span class="agent-name" style="color: #2563EB">Project Lead</span><span class="step-badge">decide</span></div><div class="msg-body"><div class="md-content">ADVANCE: OCCOC(=O)N1CCC(=C2c3ccc(F)cc3CCc3ncccc32)CC1</div></div></div></div></details></section></main>
+<footer class="report-footer">
+  <nav class="footer-nav">
+    <a href="index.html">Back to Dashboard</a>
+    <a href="index.html">View All Reports</a>
+  </nav>
+  Generated by <strong>Catalyst</strong> &mdash; Multi-Agent Scientific Optimization Framework
+</footer>
+<script src="https://unpkg.com/smiles-drawer@2.0.1/dist/smiles-drawer.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  SmilesDrawer.apply({bondThickness: 1.5, fontSizeLarge: 11, fontSizeSmall: 7, padding: 20});
+});
+</script>
+</body>
+</html>
