@@ -253,7 +253,7 @@ footer a{color:var(--primary);font-weight:500}
      ============================================================ -->
 <div class="stats-row">
   <div class="stat-card">
-    <div class="stat-value">7</div>
+    <div class="stat-value">8</div>
     <div class="stat-label">Key Findings</div>
   </div>
   <div class="stat-card">
@@ -290,6 +290,7 @@ footer a{color:var(--primary);font-weight:500}
     <a class="toc-card" href="#finding-5"><span class="toc-num">5</span><span class="toc-label">Per-Task Failure Divergence</span></a>
     <a class="toc-card" href="#finding-6"><span class="toc-num">6</span><span class="toc-label">Two Rounds May Not Be Enough</span></a>
     <a class="toc-card" href="#finding-7"><span class="toc-num">7</span><span class="toc-label">Aggregate Performance</span></a>
+    <a class="toc-card" href="#finding-8"><span class="toc-num">8</span><span class="toc-label">Smarter Optimization Loop</span></a>
   </div>
 </div>
 
@@ -794,6 +795,109 @@ footer a{color:var(--primary);font-weight:500}
       QED and LogP improvement but at the cost of lower validity and similarity. <strong>Single</strong> offers the highest validity
       among full runs. <strong>Default</strong> is the most conservative, with the highest similarity but lowest QED gain.
       The right configuration depends on whether the optimization goal prioritizes structural preservation or property improvement.
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     FINDING 8: SMARTER OPTIMIZATION LOOP
+     ============================================================ -->
+<div class="finding-card" id="finding-8">
+  <div class="finding-header">
+    <div class="finding-num finding-num-green">8</div>
+    <div class="finding-title">Smarter Optimization Loop</div>
+  </div>
+  <div class="finding-body">
+    <p>
+      Findings 1 and 6 revealed two concrete inefficiencies in the multi-agent loop: <strong>wasteful revise steps</strong>
+      (the Critic marks most proposals as PROCEED, yet revise always runs) and <strong>no cross-round learning</strong>
+      (agents only see the current round's messages, with no feedback on which prior proposals succeeded or failed).
+      Two targeted changes address these issues.
+    </p>
+
+    <p>
+      <strong>Change 1 &mdash; Conditional Revise Skip.</strong> The domain pack now inspects the Critic's output before
+      running the revise step. If the critique contains no <code>REVISE</code> verdicts (only <code>PROCEED</code>),
+      the revise step is skipped entirely. This is implemented via a new <code>should_skip_step()</code> hook on
+      <code>DomainPack</code> that <code>DrugDiscoveryPack</code> overrides for the revise step. The round manager
+      calls this hook before executing each step.
+    </p>
+
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Scenario</th>
+            <th>Revise Step</th>
+            <th>LLM Calls / Round</th>
+            <th>Rationale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-best">
+            <td>Critique says all PROCEED</td>
+            <td><span class="badge badge-green">Skipped</span></td>
+            <td class="cell-mono cell-best">6</td>
+            <td>No issues to fix &mdash; revise would produce identical output</td>
+          </tr>
+          <tr>
+            <td>Critique contains REVISE</td>
+            <td><span class="badge badge-blue">Runs</span></td>
+            <td class="cell-mono">7</td>
+            <td>Chemist must correct flagged proposals before evaluation</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      <strong>Change 2 &mdash; Cross-Round Feedback.</strong> Starting from round 2, the <code>propose</code> and
+      <code>set_priorities</code> steps now receive a structured summary of the previous round's evaluation results.
+      This summary ranks all proposals by objective improvement, highlights the best and worst candidates with their
+      property deltas and similarity scores, and flags constraint violations. The Medicinal Chemist can now build on
+      what worked and avoid repeating what didn't.
+    </p>
+
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Feedback Field</th>
+            <th>Example</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600">BEST proposal</td>
+            <td class="cell-mono">CC(O)O &mdash; &Delta;logp=&minus;1.2, sim=0.80</td>
+            <td>Reinforces effective modification strategies</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">WORST proposal</td>
+            <td class="cell-mono">CCCO &mdash; &Delta;logp=&minus;0.2, sim=0.60</td>
+            <td>Discourages ineffective or risky changes</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">Valid / Invalid counts</td>
+            <td class="cell-mono">2 valid, 1 invalid</td>
+            <td>Signals SMILES quality issues to address</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">Constraint status</td>
+            <td class="cell-mono">Meets constraints: True</td>
+            <td>Warns about similarity threshold violations</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="insight good">
+      <strong>Expected Impact:</strong> The revise skip eliminates one LLM call per round in the common case (Findings 1 and the
+      fixed-critic data show PROCEED is the dominant verdict). Cross-round feedback directly addresses the <em>blind proposal</em>
+      problem&mdash;rather than proposing independently each round, the Medicinal Chemist now has objective evidence of what
+      structural changes actually improved the target properties. Together, these changes make each round both cheaper and
+      more informed.
     </div>
   </div>
 </div>
