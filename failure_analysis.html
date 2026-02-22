@@ -212,11 +212,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     
     <div class="summary-grid">
       <div class="summary-card">
-        <div class="summary-value">9</div>
+        <div class="summary-value">12</div>
         <div class="summary-label">Experiments</div>
       </div>
       <div class="summary-card">
-        <div class="summary-value">146</div>
+        <div class="summary-value">249</div>
         <div class="summary-label">Total Tasks</div>
       </div>
       <div class="summary-card">
@@ -224,7 +224,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
         <div class="summary-label">Succeeded</div>
       </div>
       <div class="summary-card">
-        <div class="summary-value" style="color:var(--red)">146</div>
+        <div class="summary-value" style="color:var(--red)">249</div>
         <div class="summary-label">Failed</div>
       </div>
       <div class="summary-card">
@@ -232,13 +232,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
         <div class="summary-label">Success Rate</div>
       </div>
       <div class="summary-card">
-        <div class="summary-value">7</div>
+        <div class="summary-value">8</div>
         <div class="summary-label">Unique Failing Tasks</div>
       </div>
     </div>
     <p class="section-intro">
-      Across 9 experiment configurations, 8 task-level failures
-      were observed involving 7 unique task IDs. Each experiment achieves
+      Across 12 experiment configurations, 9 task-level failures
+      were observed involving 8 unique task IDs. Each experiment achieves
       90% success rate (18/20), with exactly 2 failures per configuration.
       The failures cluster into two distinct root causes that are
       actionable and fixable.
@@ -260,7 +260,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
           <span class="cat-dot" style="background:var(--red)"></span>
           Category 1: Project Lead Decision Failures
         </div>
-        <div class="cat-group-count">5 of 8 failures</div>
+        <div class="cat-group-count">6 of 9 failures</div>
       </div>
       <p class="cat-desc">
         Valid molecules with genuine property improvements exist in the evaluation data,
@@ -324,6 +324,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
             PL reason: <em>&ldquo;No chemically valid proposals were provided; the only evaluated molecule (the starting scaffold) does not meet the logP &hellip;&rdquo;</em>
           </div>
         </div>
+
+        <div class="cat-example">
+          <div class="cat-example-header">
+            <span class="cat-task">original_chatdrug_50t_1r / chatdrug_047</span>
+            <span class="cat-tag tag-red">3 valid evals ignored</span>
+          </div>
+          <div class="cat-example-detail">
+            Best LogP delta: <strong>-1.54</strong> &mdash;
+            PL reason: <em>&ldquo;No proposed analogue both satisfies the required Tanimoto similarity (≥ 0.4) and achieves a lower logP than the starting&hellip;&rdquo;</em>
+          </div>
+        </div>
 </div></div>
 
     <div class="cat-group">
@@ -332,7 +343,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
           <span class="cat-dot" style="background:var(--purple)"></span>
           Category 2: Invalid SMILES Generation
         </div>
-        <div class="cat-group-count">3 of 8 failures</div>
+        <div class="cat-group-count">3 of 9 failures</div>
       </div>
       <p class="cat-desc">
         The Medicinal Chemist proposes SMILES strings that <strong>RDKit cannot parse</strong>
@@ -393,13 +404,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     </p>
     <div class="table-wrap">
       <table class="matrix-table">
-        <thead><tr><th>Task ID</th><th title="default_20t_2r">default</th><th title="default_fixed_critic_10t_2r">default_fixed_critic_10t_2r</th><th title="default_fixed_critic_20t_2r">default_fixed_critic</th><th title="live_vllm_test">live_vllm_test</th><th title="no_admet_20t_2r">no_admet</th><th title="no_critic_20t_2r">no_critic</th><th title="single_agent_20t_2r">single_agent</th><th title="structured_decide_20t_2r">structured_decide</th><th title="structured_decide_20t_5r">structured_decide_20t_5r</th><th>Category</th></tr></thead>
-        <tbody><tr class=""><td class="cell-task">chatdrug_004</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">No Proposals Generated</td></tr><tr class=""><td class="cell-task">chatdrug_006</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">All Proposed SMILES Invalid</td></tr><tr class=""><td class="cell-task">chatdrug_007</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">Project Lead Misreads Evaluation Data</td></tr><tr class=""><td class="cell-task">chatdrug_009</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">Project Lead Misreads Evaluation Data</td></tr><tr class=""><td class="cell-task">chatdrug_011</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">No Proposals Generated</td></tr><tr class=""><td class="cell-task">chatdrug_013</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">Project Lead Misreads Evaluation Data</td></tr><tr class="row-multi"><td class="cell-task">chatdrug_016</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">Project Lead Misreads Evaluation Data</td></tr></tbody>
+        <thead><tr><th>Task ID</th><th title="chatdrug_autolead">chatdrug_autolead</th><th title="default_20t_2r">default</th><th title="default_fixed_critic_10t_2r">default_fixed_critic_10t_2r</th><th title="default_fixed_critic_20t_2r">default_fixed_critic</th><th title="live_vllm_test">live_vllm_test</th><th title="no_admet_20t_2r">no_admet</th><th title="no_critic_20t_2r">no_critic</th><th title="original_chatdrug_50t_1r">original_chatdrug_50t_1r</th><th title="original_chatdrug_50t_2r">original_chatdrug_50t_2r</th><th title="single_agent_20t_2r">single_agent</th><th title="structured_decide_20t_2r">structured_decide</th><th title="structured_decide_20t_5r">structured_decide_20t_5r</th><th>Category</th></tr></thead>
+        <tbody><tr class=""><td class="cell-task">chatdrug_004</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">No Proposals Generated</td></tr><tr class=""><td class="cell-task">chatdrug_006</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">All Proposed SMILES Invalid</td></tr><tr class=""><td class="cell-task">chatdrug_007</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">Project Lead Misreads Evaluation Data</td></tr><tr class=""><td class="cell-task">chatdrug_009</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">Project Lead Misreads Evaluation Data</td></tr><tr class=""><td class="cell-task">chatdrug_011</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">No Proposals Generated</td></tr><tr class=""><td class="cell-task">chatdrug_013</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">Project Lead Misreads Evaluation Data</td></tr><tr class="row-multi"><td class="cell-task">chatdrug_016</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">Project Lead Misreads Evaluation Data</td></tr><tr class=""><td class="cell-task">chatdrug_047</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-fail">FAIL</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-pass">PASS</td><td class="cell-cat">Project Lead Premature Termination</td></tr></tbody>
       </table>
     </div>
     <div class="matrix-insights">
       <div class="insight-card">
-        <div class="insight-value">7</div>
+        <div class="insight-value">8</div>
         <div class="insight-label">Unique failing tasks</div>
       </div>
       <div class="insight-card">
@@ -407,7 +418,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
         <div class="insight-label">Tasks failing in 2+ configs</div>
       </div>
       <div class="insight-card">
-        <div class="insight-value">6</div>
+        <div class="insight-value">7</div>
         <div class="insight-label">Config-specific failures</div>
       </div>
     </div>
